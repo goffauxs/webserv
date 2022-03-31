@@ -2,6 +2,7 @@
 # define UTILS_HPP
 # include <string>
 # include <vector>
+# include <sstream>
 
 const static std::string LINE_END = "\r\n";
 
@@ -16,7 +17,7 @@ std::vector<std::string> split(const std::string& str, const std::string& delim 
 	while ((pos = strCopy.find(delim)) != std::string::npos)
 	{
 		token = strCopy.substr(0, pos);
-		strCopy.substr(0, pos + delim.length());
+		strCopy.erase(0, pos + delim.length());
 
 		tokens.push_back(token);
 	}
@@ -29,7 +30,7 @@ std::string concat(const std::vector<std::string>& strings, const std::string& d
 {
 	std::string res;
 
-	for (int i = 0; i < strings.size(); i++)
+	for (size_t i = 0; i < strings.size(); i++)
 	{
 		res += strings[i];
 
@@ -56,47 +57,49 @@ std::string to_string(Method method)
 {
 	switch (method)
 	{
-	case Method::GET:
+	case GET:
 		return "GET";
-	case Method::HEAD:
+	case HEAD:
 		return "HEAD";
-	case Method::POST:
+	case POST:
 		return "POST";
-	case Method::PUT:
+	case PUT:
 		return "PUT";
-	case Method::DELETE:
+	case DELETE:
 		return "DELETE";
-	case Method::TRACE:
+	case TRACE:
 		return "TRACE";
-	case Method::OPTIONS:
+	case OPTIONS:
 		return "OPTIONS";
-	case Method::CONNECT:
+	case CONNECT:
 		return "CONNECT";
-	case Method::PATCH:
+	case PATCH:
 		return "PATCH";
 	}
 }
 
 Method method_from_string(const std::string& method)
 {
-	if (method == to_string(Method::GET))
-		return Method::GET;
-	else if (method == to_string(Method::HEAD))
-		return Method::HEAD;
-	else if (method == to_string(Method::POST))
-		return Method::POST;
-	else if (method == to_string(Method::PUT))
-		return Method::PUT;
-	else if (method == to_string(Method::DELETE))
-		return Method::DELETE;
-	else if (method == to_string(Method::TRACE))
-		return Method::TRACE;
-	else if (method == to_string(Method::OPTIONS))
-		return Method::OPTIONS;
-	else if (method == to_string(Method::CONNECT))
-		return Method::CONNECT;
-	else if (method == to_string(Method::PATCH))
-		return Method::PATCH;
+	if (method == to_string(GET))
+		return GET;
+	else if (method == to_string(HEAD))
+		return HEAD;
+	else if (method == to_string(POST))
+		return POST;
+	else if (method == to_string(PUT))
+		return PUT;
+	else if (method == to_string(DELETE))
+		return DELETE;
+	else if (method == to_string(TRACE))
+		return TRACE;
+	else if (method == to_string(OPTIONS))
+		return OPTIONS;
+	else if (method == to_string(CONNECT))
+		return CONNECT;
+	else if (method == to_string(PATCH))
+		return PATCH;
+	else
+		return GET;
 }
 
 enum Version
@@ -110,23 +113,25 @@ std::string to_string(Version version)
 {
 	switch (version)
 	{
-	case Version::HTTP_1_0:
+	case HTTP_1_0:
 		return "HTTP/1.0";
-	case Version::HTTP_1_1:
+	case HTTP_1_1:
 		return "HTTP/1.1";
-	case Version::HTTP_2_0:
+	case HTTP_2_0:
 		return "HTTP/2.0";
 	}
 }
 
 Version version_from_string(const std::string& version)
 {
-	if (version == to_string(Version::HTTP_1_0))
-		return Version::HTTP_1_0;
-	else if (version == to_string(Version::HTTP_1_1))
-		return Version::HTTP_1_1;
-	else if (version == to_string(Version::HTTP_2_0))
-		return Version::HTTP_2_0;
+	if (version == to_string(HTTP_1_0))
+		return HTTP_1_0;
+	else if (version == to_string(HTTP_1_1))
+		return HTTP_1_1;
+	else if (version == to_string(HTTP_2_0))
+		return HTTP_2_0;
+	else
+		return HTTP_1_1;
 }
 
 bool is_not_space(char c) { return !std::isspace(c); }
