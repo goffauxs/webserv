@@ -6,6 +6,7 @@ class Header
 {
 public:
 	Header(const std::string& key, const std::string& value) : _key(key), _value(value) {}
+	Header(const Header& other) : _key(other._key), _value(other._value) {}
 	Header(const std::string& header)
 	{
 		std::stringstream headerStream(header);
@@ -21,7 +22,6 @@ public:
 	std::string serialize() const { return this->_key + ": " + this->_value + LINE_END; }
 private:
 	Header() {}
-	Header(const Header&) {}
 	Header& operator==(const Header&) { return *this; }
 
 	std::string _key;

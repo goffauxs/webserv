@@ -37,9 +37,9 @@ public:
 	{
 		std::string request;
 		request = to_string(this->_method) + " " + this->_resource + " " + to_string(this->_version) + LINE_END;
-		for (const Header& header : this->_headers)
+		for (std::vector<Header>::const_iterator it = this->_headers.begin(); it != this->_headers.end(); it++)
 		{
-			request += header.serialize();
+			request += it->serialize();
 		}
 		request += LINE_END;
 		return request;

@@ -15,9 +15,20 @@
 
 void handle_command(int socket, char *request)
 {
+	(void)socket;
 	std::string req_str(request);
 	Request req(req_str);
-	std::cout << to_string(req.get_method()) << std::endl;
+	std::vector<Header> headers = req.get_headers();
+	switch (req.get_method())
+	{
+	case GET:
+		std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
+		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
+			std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
+		break;
+	default:
+		break;
+	}
 }
 
 int main(int argc, char const *argv[])
