@@ -12,11 +12,61 @@
 #include "request.hpp"
 
 #define PORT 8080
+#define	BUFFSIZE 30000
 
-void handle_command(int socket, char *request)
+void	check(int val, std::string msg)
 {
-	(void)socket;
-	std::string req_str(request);
+	if (val == -1)
+	{
+		std::cout << msg << std::endl;
+		exit(1);
+	}
+}
+
+int	setup_serv(int backlog)
+{
+	int socket_fd;
+
+	//create socket with IPV4, TCP
+	check((socket_fd = socket(AF_INET, SOCK_STREAM, 0)), "Failed to create socket");
+
+	//initalize the address struct
+	sockaddr_in sockaddr; //https://www.gta.ufrj.br/ensino/eel878/sockets/sockaddr_inman.html
+	sockaddr.sin_family = AF_INET;
+	sockaddr.sin_addr.s_addr = INADDR_ANY; //inaddr_any because any address
+	sockaddr.sin_port = htons(PORT);
+
+	//start listening
+	check(bind(socket_fd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)),
+		"Failed to bind to port " + std::to_string(PORT));
+	check(listen(socket_fd, backlog), "Failed to listen on socket");
+
+	return (socket_fd);
+}
+
+int	accept_connection(int socket_fd)
+{
+	int	client_fd;
+	int	addrlen = sizeof(sockaddr_in);
+	sockaddr_in	client_addr;
+
+	check(client_fd = accept(socket_fd, (struct sockaddr*)&client_addr, (socklen_t*)&addrlen),
+		"Failed to grab connection");
+
+	return (client_fd);
+}
+
+void	handle_connection(int client_fd)
+{
+	char *buff = new char[BUFFSIZE];
+	std::string	response;
+
+	memset(buff, '\0', BUFFSIZE);
+
+	int bytes_read = read(client_fd, buff, BUFFSIZE);
+	check(bytes_read, "read error");
+
+	std::string req_str(buff);
 	Request req(req_str);
 	std::vector<Header> headers = req.get_headers();
 	switch (req.get_method())
@@ -29,55 +79,52 @@ void handle_command(int socket, char *request)
 	default:
 		break;
 	}
+
+	// //Send a message to the connection
+	// send(client_fd, response.c_str(), response.size(), 0);
+
+	close(client_fd);
 }
 
-int main(int argc, char const *argv[])
+int	main()
 {
-	(void)argc;
-	(void)argv;
-	int server_fd, new_socket; long valread;
-	struct sockaddr_in address;
-	int addrlen = sizeof(address);
-	
-	// Creating socket file descriptor
-	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-	{
-		perror("In socket");
-		exit(EXIT_FAILURE);
-	}
-	
+	int	backlog = 100;
+	int	socket_fd = setup_serv(backlog);
+	int	client_fd;
 
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons( PORT );
-	
-	memset(address.sin_zero, '\0', sizeof address.sin_zero);
-	
-	
-	if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0)
+	fd_set	current_sockets, ready_sockets;
+
+	FD_ZERO(&current_sockets); //zero out current_sockets
+	FD_SET(socket_fd, &current_sockets); //add socket_fd to current set
+	//current_sockets = set of fds that we're watching
+	//ready_sockets = tmp that will contain all the set of fds that are ready after we give it to select
+
+	int	max_socket = socket_fd; //used to reduce the amount of times we're gonna go through the for loop
+	while (1)
 	{
-		perror("In bind");
-		exit(EXIT_FAILURE);
-	}
-	if (listen(server_fd, 10) < 0)
-	{
-		perror("In listen");
-		exit(EXIT_FAILURE);
-	}
-	while(1)
-	{
-		printf("\n+++++++ Waiting for new connection ++++++++\n\n");
-		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
+		//ready_sockets is a tmp because select is destructive
+		ready_sockets = current_sockets;
+
+		//select(range of fd to check, set of fds to check for read, for write, for errors, timeout value)
+		check(select(max_socket + 1, &ready_sockets, NULL, NULL, NULL), "Select error");
+
+		for (int i = 0; i <= max_socket; i++)
 		{
-			perror("In accept");
-			exit(EXIT_FAILURE);
+			if (FD_ISSET(i, &ready_sockets)) //check if fd i is ready
+			{
+				if (i == socket_fd) //this is a new connection
+				{
+					client_fd = accept_connection(socket_fd);
+					FD_SET(client_fd, &current_sockets); //add new connection to set of fds we're watching
+					if (client_fd > max_socket)
+						max_socket = client_fd;
+				}
+				else
+				{
+					handle_connection(i);
+					FD_CLR(i, &current_sockets); //remove fd from set of fds we're watching
+				}
+			}
 		}
-		
-		char buffer[30000] = {0};
-		valread = read( new_socket , buffer, 30000);
-		handle_command(new_socket, buffer);
-		printf("------------------Hello message sent-------------------\n");
-		close(new_socket);
 	}
-	return 0;
 }
