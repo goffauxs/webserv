@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <cstdio>
 #include "header.hpp"
 #include "request.hpp"
 #include "utils.hpp"
@@ -40,8 +41,25 @@ std::string	request_get(Request const &req)
 
 		return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + std::to_string(body.length()) + "\n\n" + body);
 	}
+}
 
-	return (path);
+std::string	request_delete(Request const &req)
+{
+	std::string	path = "server";
+
+	if (!remove((path + req.get_resource()).c_str()))
+	{
+		return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nFile deleted");
+	}
+	else
+	{
+		std::ifstream	errFile("errors/404.html");
+		std::ostringstream	stream;
+		stream << errFile.rdbuf();
+		std::string	body = stream.str();
+
+		return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + std::to_string(body.length()) + "\n\n" + body);
+	}
 }
 
 std::string	parse(Request const &req)
@@ -50,6 +68,8 @@ std::string	parse(Request const &req)
 	{
 		case GET:
 			return (request_get(req));
+		case DELETE:
+			return (request_delete(req));
 		default:
 			return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 30\n\nThis method is not yet handled");
 	}

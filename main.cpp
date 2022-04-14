@@ -12,7 +12,7 @@
 #include "utils.hpp"
 #include "webserv.hpp"
 
-#define PORT 8080
+#define PORT 8000
 #define	BUFFSIZE 30000
 
 void	check(int val, std::string msg)
@@ -71,16 +71,16 @@ void	handle_connection(int client_fd)
 	Request req(req_str);
 	std::vector<Header> headers = req.get_headers();
 	/* prints headers */
-	// switch (req.get_method())
-	// {
-	// case GET:
-	// 	std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
-	// 	for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
-	// 		std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
-	// 	break;
-	// default:
-	// 	break;
-	// }
+	switch (req.get_method())
+	{
+	case DELETE:
+		std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
+		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
+			std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
+		break;
+	default:
+		break;
+	}
 
 	response = parse(req);
 
