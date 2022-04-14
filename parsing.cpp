@@ -43,6 +43,11 @@ std::string	request_get(Request const &req)
 	}
 }
 
+// std::string	request_post(Request const &req)
+// {
+	
+// }
+
 std::string	request_delete(Request const &req)
 {
 	std::string	path = "server";
@@ -68,6 +73,8 @@ std::string	parse(Request const &req)
 	{
 		case GET:
 			return (request_get(req));
+		// case POST:
+		// 	return (request_post(req));
 		case DELETE:
 			return (request_delete(req));
 		default:

@@ -25,6 +25,12 @@ public:
 			Header tmp(request_line);
 			this->_headers.push_back(tmp);
 		}
+		// std::string	tmp;
+		// while (std::getline(requestStream, tmp))
+		// {
+		// 	this->_body.append(tmp);
+		// }
+		// std::cout << "|body = " << this->_body << "|" << std::endl;
 	}
 
 	Method get_method() const { return this->_method; }
@@ -52,6 +58,7 @@ private:
 	Method _method;
 	std::string _resource;
 	std::vector<Header> _headers;
+	std::string	_body;
 };
 
 #endif /* REQUEST_HPP */
