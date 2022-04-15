@@ -25,12 +25,8 @@ public:
 			Header tmp(request_line);
 			this->_headers.push_back(tmp);
 		}
-		// std::string	tmp;
-		// while (std::getline(requestStream, tmp))
-		// {
-		// 	this->_body.append(tmp);
-		// }
-		// std::cout << "|body = " << this->_body << "|" << std::endl;
+
+		this->_body = requestStream.str().substr(requestStream.tellg());
 	}
 
 	Method get_method() const { return this->_method; }
