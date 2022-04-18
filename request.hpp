@@ -27,12 +27,35 @@ public:
 		}
 
 		this->_body = requestStream.str().substr(requestStream.tellg());
+
+		// std::string	tmp;
+		// size_t	EBound;
+		// std::string	boundary;
+		// size_t	start;
+		// size_t	end;
+		// switch (this->_method)
+		// {
+		// 	case POST:
+		// 		tmp = requestStream.str().substr(requestStream.tellg());
+		// 		std::cout << "tmp = " << tmp << std::endl;
+		// 		EBound = (tmp.find("\r"));
+		// 		boundary = tmp.substr(0, EBound);
+		// 		start = tmp.find("\n", tmp.find("Content-Type:"));
+		// 		start += 3;
+		// 		boundary.append("--");
+		// 		end = tmp.find(boundary);
+		// 		this->_body = tmp.substr(start, end - start - 2);
+		// 		break ;
+		// 	default:
+		// 		break ;
+		// }
 	}
 
 	Method get_method() const { return this->_method; }
 	Version get_version() const { return this->_version; }
 	std::string get_resource() const { return this->_resource; }
 	std::vector<Header> get_headers() const { return this->_headers; }
+	std::string	get_body() const { return this->_body; }
 
 	std::string serialize() const
 	{

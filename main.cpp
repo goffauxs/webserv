@@ -12,7 +12,7 @@
 #include "utils.hpp"
 #include "webserv.hpp"
 
-#define PORT 8080
+#define PORT 8000
 #define	BUFFSIZE 300000
 
 void	check(int val, std::string msg)
@@ -66,23 +66,28 @@ void	handle_connection(int client_fd)
 
 	int bytes_read = read(client_fd, buff, BUFFSIZE);
 	check(bytes_read, "read error");
+	// for (int i = 0; i < 200; i++)
+	// 	std::cout << buff[i];
+	// std::cout << std::endl;
+	// std::cout << buff << std::endl;
 
 	std::string req_str(buff);
 	Request req(req_str);
 	std::vector<Header> headers = req.get_headers();
 	/* prints headers */
-	switch (req.get_method())
-	{
-	case POST:
-		std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
-		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
-			std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
-		break;
-	default:
-		break;
-	}
+	// switch (req.get_method())
+	// {
+	// case POST:
+	// 	std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
+	// 	for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
+	// 		std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
+	// 	break;
+	// default:
+	// 	break;
+	// }
+	// std::cout << "body = " << req.get_body() << std::endl;
 
-	response = parse(req);
+	response = parse(req, buff);
 
 	//Send a message to the connection
 	send(client_fd, response.c_str(), response.size(), 0);
