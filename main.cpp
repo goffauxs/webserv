@@ -66,13 +66,9 @@ void	handle_connection(int client_fd)
 
 	int bytes_read = read(client_fd, buff, BUFFSIZE);
 	check(bytes_read, "read error");
-	// for (int i = 0; i < 200; i++)
-	// 	std::cout << buff[i];
-	// std::cout << std::endl;
 	// std::cout << buff << std::endl;
 
-	std::string req_str(buff);
-	Request req(req_str);
+	Request req(buff);
 	std::vector<Header> headers = req.get_headers();
 	/* prints headers */
 	// switch (req.get_method())
@@ -87,7 +83,7 @@ void	handle_connection(int client_fd)
 	// }
 	// std::cout << "body = " << req.get_body() << std::endl;
 
-	response = parse(req, buff);
+	response = parse(req);
 
 	//Send a message to the connection
 	send(client_fd, response.c_str(), response.size(), 0);

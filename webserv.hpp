@@ -5,4 +5,4 @@
 
 //just a c style .h file for prototypes
 
-std::string	parse(Request const &req, char *buff);
+std::string	parse(Request const &req);

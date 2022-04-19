@@ -45,23 +45,6 @@ std::string	request_get(Request const &req)
 	}
 }
 
-std::string	request_post(Request const &req)
-{
-	FILE	*file = fopen("test.c", "w");
-
-	// size_t	EBound = (req.get_body().find("\r"));
-	// std::string	boundary = req.get_body().substr(0, EBound);
-
-	// size_t	start = req.get_body().find("\n", req.get_body().find("Content-Type:"));
-	// start += 3;
-	// boundary.append("--");
-	// size_t	end = req.get_body().find(boundary);
-	// std::string cont = req.get_body().substr(start, end - start - 2);
-	write(fileno(file), req.get_body().c_str(), 46294);
-
-	return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 30\n\nThis method is not yet handled");
-}
-
 std::string	request_delete(Request const &req)
 {
 	std::string	path = "server";
@@ -81,21 +64,9 @@ std::string	request_delete(Request const &req)
 	}
 }
 
-std::string	post_meth(Request const &req, char *buff)
+std::string	request_post(Request const &req)
 {
-	std::vector<Header> headers = req.get_headers();
-	std::string	contentLength;
-	for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
-		if (it->get_key() == "Content-Length")
-		{
-			contentLength = it->get_value();
-			break ;
-		}
-	int	CL = atoi(contentLength.c_str());
-
-	char	*content = new char[CL];
-
-	std::string	buffString = buff;
+	std::string	buffString = req.get_content();
 	size_t	posBound = buffString.find("boundary=") + 9;
 	std::string	boundary = buffString.substr(posBound, buffString.find("\r", posBound) - posBound);
 
@@ -106,29 +77,31 @@ std::string	post_meth(Request const &req, char *buff)
 	size_t	posStart = buffString.find("\n", posCT);
 	posStart += 3;
 
+	size_t	size = req.get_contentLength() - (posStart - posSecBound) - (secBound.size() + 6);
+	char	*content = new char[size];
+
 	int j = 0;
-	for (int i = posStart; i < posStart + (CL - (posStart - posSecBound) - (secBound.size() + 6)); i++)
+	for (int i = posStart; i < posStart + size; i++)
 	{
-		content[j] = buff[i];
+		content[j] = req.get_content()[i];
 		j++;
 	}
 	std::cout << std::endl;
 
 	FILE	*file = fopen("test.png", "w");
-	write(fileno(file), content, CL - (posStart - posSecBound) - (secBound.size() + 6));
+	write(fileno(file), content, size);
 
 	return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 30\n\nThis method is not yet handled");
 }
 
-std::string	parse(Request const &req, char *buff)
+std::string	parse(Request const &req)
 {
 	switch (req.get_method())
 	{
 		case GET:
 			return (request_get(req));
 		case POST:
-			return (post_meth(req, buff));
-			// return (request_post(req));
+			return (request_post(req));
 		case DELETE:
 			return (request_delete(req));
 		default:

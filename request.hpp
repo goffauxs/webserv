@@ -1,5 +1,7 @@
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
+
+#include <stdlib.h>
 #include "header.hpp"
 
 class Request
@@ -7,8 +9,10 @@ class Request
 public:
 	Request(Method method, const std::string& resource, const std::vector<Header>& headers, Version version = HTTP_1_1)
 		: _version(version), _method(method), _resource(resource), _headers(headers) {}
-	Request(const std::string& request)
+	Request(char *buff)
 	{
+		this->_content = buff;
+		std::string	request = buff;
 		std::stringstream requestStream(request);
 		std::string request_line;
 		std::getline(requestStream, request_line);
@@ -26,29 +30,17 @@ public:
 			this->_headers.push_back(tmp);
 		}
 
+		std::vector<Header> headers = this->_headers;
+		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
+			if (it->get_key() == "Content-Length")
+			{
+				this->_contentLength = atoi(it->get_value().c_str());
+				break ;
+			}
+
 		this->_body = requestStream.str().substr(requestStream.tellg());
 
-		// std::string	tmp;
-		// size_t	EBound;
-		// std::string	boundary;
-		// size_t	start;
-		// size_t	end;
-		// switch (this->_method)
-		// {
-		// 	case POST:
-		// 		tmp = requestStream.str().substr(requestStream.tellg());
-		// 		std::cout << "tmp = " << tmp << std::endl;
-		// 		EBound = (tmp.find("\r"));
-		// 		boundary = tmp.substr(0, EBound);
-		// 		start = tmp.find("\n", tmp.find("Content-Type:"));
-		// 		start += 3;
-		// 		boundary.append("--");
-		// 		end = tmp.find(boundary);
-		// 		this->_body = tmp.substr(start, end - start - 2);
-		// 		break ;
-		// 	default:
-		// 		break ;
-		// }
+
 	}
 
 	Method get_method() const { return this->_method; }
@@ -56,6 +48,8 @@ public:
 	std::string get_resource() const { return this->_resource; }
 	std::vector<Header> get_headers() const { return this->_headers; }
 	std::string	get_body() const { return this->_body; }
+	char	*get_content() const { return this->_content; }
+	size_t	get_contentLength() const { return this->_contentLength; }
 
 	std::string serialize() const
 	{
@@ -77,6 +71,8 @@ private:
 	Method _method;
 	std::string _resource;
 	std::vector<Header> _headers;
+	char	*_content;
+	size_t	_contentLength;
 	std::string	_body;
 };
 
