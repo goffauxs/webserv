@@ -50,7 +50,8 @@ enum Method
 	TRACE,
 	OPTIONS,
 	CONNECT,
-	PATCH
+	PATCH,
+	INVALID_METHOD
 };
 
 std::string to_string(Method method)
@@ -75,6 +76,8 @@ std::string to_string(Method method)
 		return "CONNECT";
 	case PATCH:
 		return "PATCH";
+	default:
+		return "INVALID";
 	}
 }
 
@@ -99,7 +102,7 @@ Method method_from_string(const std::string& method)
 	else if (method == to_string(PATCH))
 		return PATCH;
 	else
-		return GET;
+		return INVALID_METHOD;
 }
 
 enum Version
@@ -132,6 +135,60 @@ Version version_from_string(const std::string& version)
 		return HTTP_2_0;
 	else
 		return HTTP_1_1;
+}
+
+enum Directive
+{
+	allowed_methods,
+	autoindex,
+	upload,
+	upload_dir,
+	root,
+	default_index,
+	server_name,
+	host,
+	port,
+	location,
+	INVALID_DIRECTIVE
+};
+
+std::string to_string(Directive directive)
+{
+	switch(directive)
+	{
+	case allowed_methods:
+		return "allowed_methods";
+	case autoindex:
+		return "autoindex";
+	case upload:
+		return "upload";
+	case upload_dir:
+		return "upload_dir";
+	case root:
+		return "root";
+	case default_index:
+		return "index";
+	default:
+		return "invalid";
+	}
+}
+
+Directive directive_from_string(const std::string& directive)
+{
+	if (directive == to_string(allowed_methods))
+		return allowed_methods;
+	else if (directive == to_string(autoindex))
+		return autoindex;
+	else if (directive == to_string(upload))
+		return upload;
+	else if (directive == to_string(upload_dir))
+		return upload_dir;
+	else if (directive == to_string(root))
+		return root;
+	else if (directive == to_string(default_index))
+		return default_index;
+	else
+		return INVALID_DIRECTIVE;
 }
 
 bool is_not_space(char c) { return !std::isspace(c); }
