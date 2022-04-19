@@ -105,6 +105,6 @@ std::string	parse(Request const &req)
 		case DELETE:
 			return (request_delete(req));
 		default:
-			return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 30\n\nThis method is not yet handled");
+			return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 26\n\nThis method is not handled");
 	}
 }

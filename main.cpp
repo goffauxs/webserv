@@ -12,6 +12,8 @@
 #include "utils.hpp"
 #include "webserv.hpp"
 
+#include <arpa/inet.h>
+
 #define PORT 8000
 #define	BUFFSIZE 300000
 
@@ -53,6 +55,7 @@ int	accept_connection(int socket_fd)
 
 	check(client_fd = accept(socket_fd, (struct sockaddr*)&client_addr, (socklen_t*)&addrlen),
 		"Failed to grab connection");
+	// std::cout << "address = " << inet_ntoa(client_addr.sin_addr) << std::endl;
 
 	return (client_fd);
 }
