@@ -2,6 +2,7 @@
 #define UTILS_HPP
 #include <string>
 #include <vector>
+#include <sstream>
 
 const static std::string LINE_END = "\r\n";
 

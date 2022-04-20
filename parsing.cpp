@@ -9,12 +9,21 @@
 #include "header.hpp"
 #include "request.hpp"
 #include "utils.hpp"
+#include "webserv.hpp"
 
 std::string	request_get(Request const &req)
 {
 	std::string	path = "server";
+	std::string	action;
 
-	std::ifstream	ifs((path + req.get_resource()).c_str());
+	if (req.get_resource().find("?") != SIZE_T_MAX)
+	{
+		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
+		exec_cgi("cgi/test.py", NULL, req);
+	}
+	else
+		action = req.get_resource();
+	std::ifstream	ifs(path + action);
 	if (ifs)
 	{
 		std::ostringstream	stream;

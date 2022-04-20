@@ -1,5 +1,7 @@
 //Execute cgi
 #include "header.hpp"
+#include "request.hpp"
+#include "webserv.hpp"
 #include <iostream>
 #include <unistd.h>
 
@@ -31,7 +33,7 @@ struct timeval	zero_time()
 	return (ret);
 }
 
-std::string exec_cgi(std::string path, std::string body, std::vector<Header> headers)
+std::string exec_cgi(std::string path, std::string body, Request const &req)
 {
 	int			fd[2];
 	int			fd_i[2];
@@ -45,7 +47,8 @@ std::string exec_cgi(std::string path, std::string body, std::vector<Header> hea
 	pipe(fd_i);
 	if (!fork())
 	{
-		fork_exec(path, fd, fd_i, body, NULL);		
+		char **env = vec_to_tab(create_env(req));
+		fork_exec(path, fd, fd_i, body, env);		
 	}
 	close(fd[1]);
 	close(fd_i[0]);
@@ -66,9 +69,4 @@ std::string exec_cgi(std::string path, std::string body, std::vector<Header> hea
 	if (r != -1)
 		return_string += std::string(tmp);
 	return (return_string);
-}
-
-int	main()
-{
-	std::cout << exec_cgi("cgi-bin/cgi.py", "Yes", std::vector<Header>()) << std::endl;
 }
