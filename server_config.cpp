@@ -12,7 +12,13 @@ ServerConfig::ServerConfig(const std::string& content)
 		if (buffer == "}")
 			break;
 		std::stringstream lineStream(buffer);
-		/* TODO figure out how to empty the stringstream up to a certain 
-			delimiter and send it to the LocationConfig constructor */
+		std::string directive;
+		lineStream >> directive;
+		switch(directive_from_string(directive))
+		{
+		case location:
+			std::string rest = lineStream.str().substr(lineStream.tellg());
+			rest.erase(rest.find_first_of('}'));
+		}
 	}
 }

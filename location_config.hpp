@@ -7,7 +7,8 @@
 class LocationConfig
 {
 public:
-	LocationConfig(const std::string& content);
+	LocationConfig(const std::string& path, const std::string& content);
+	LocationConfig(const LocationConfig& other);
 
 	const std::string&		getPath() const;
 	const std::set<Method>&	getAllowedMethods() const;
@@ -17,9 +18,8 @@ public:
 	const std::string&		getRoot() const;
 	const std::string&		getIndex() const;
 private:
-	LocationConfig();
-	LocationConfig(const LocationConfig&);
-	LocationConfig& operator=(const LocationConfig&);
+	LocationConfig() {}
+	LocationConfig& operator=(const LocationConfig&) { return *this; }
 
 	std::string			_path;
 	std::set<Method>	_allowed_methods;

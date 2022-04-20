@@ -1,11 +1,9 @@
 #include "location_config.hpp"
 
-LocationConfig::LocationConfig(const std::string& content)
-	: _upload(false), _autoindex(false)
+LocationConfig::LocationConfig(const std::string& path, const std::string& content)
+	: _path(path), _autoindex(false), _upload(false)
 {
 	std::stringstream contentStream(content);
-	contentStream >> this->_path; // extract path
-	contentStream.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // ignore characters after path until end of line
 	
 	std::string buffer;
 	while (std::getline(contentStream, buffer))
@@ -45,6 +43,11 @@ LocationConfig::LocationConfig(const std::string& content)
 			break;
 		}
 	}
+}
+
+LocationConfig::LocationConfig(const LocationConfig& other)
+	: _path(other._path), _allowed_methods(other._allowed_methods), _autoindex(other._autoindex), _upload(other._upload), _upload_dir(other._upload_dir), _root(other._root), _index(other._index)
+{
 }
 
 const std::string& 		LocationConfig::getPath() const				{ return this->_path; }
