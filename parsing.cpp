@@ -19,7 +19,8 @@ std::string	request_get(Request const &req)
 	if (req.get_resource().find("?") != SIZE_T_MAX)
 	{
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
-		exec_cgi("cgi/test.py", NULL, req);
+		std::string	res = exec_cgi("cgi/test.py", "", req);
+		std::cout << "res = " << res << std::endl;
 	}
 	else
 		action = req.get_resource();

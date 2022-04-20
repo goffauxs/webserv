@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <iostream>
 #include "header.hpp"
 #include "request.hpp"
 #include "webserv.hpp"
@@ -47,7 +48,7 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 		std::string	first_header(req.get_resource());
 
 		if (first_header.find("?") != (size_t)-1)
-			vec_env.push_back("QUERY_STRING=" + first_header.substr(first_header.find("?"), first_header.size() - first_header.rfind(" ")));
+			vec_env.push_back("QUERY_STRING=" + first_header.substr(first_header.find("?") + 1, first_header.size() - first_header.rfind(" ") - 1));
 	}
 	
 	//REMOTE_HOST
