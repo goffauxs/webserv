@@ -4,6 +4,8 @@
 #include "request.hpp"
 #include "webserv.hpp"
 
+std::vector<Header>::iterator	find_header(std::vector<Header> vec, std::string key);
+
 std::vector<std::string>    create_env(Request const &req/*, also the parse of the conf file*/)
 {
 	std::vector<std::string>		vec_env;
@@ -37,7 +39,7 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 			break;
 	}
 
-	//SERVER_PORT TODO
+	//SERVER_PORT TODO .conf file parsed needed : 8080, 80 etc..
 	
 	//REQUEST_METHOD at the begining of the first line
 	switch (req.get_method())
@@ -55,15 +57,16 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 			break;
 	}
 	//PATH_INFO in the first line, after the GET/POST, before the "?" or the second " "
+	//Obsolete
 	{
 		std::string	resource(req.get_resource());
 		int			end_l = std::min(resource.find("?"), resource.rfind(" "));
 		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find(" "), resource.size() - end_l));
 	}
 	
-	//PATH_TRANSLATED TODO
+	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
 	
-	//SCRIPT_NAME TODO
+	//SCRIPT_NAME TODO .conf file parsed needed : the path of the cgi script
 	
 	//QUERY_STRING in the first line between the "?" and the last " "
 	{
@@ -113,7 +116,6 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 	{
 		vec_env.push_back("HTTP_REFERER=" + it->get_value());
 	}
-
 
 	return (vec_env);
 }

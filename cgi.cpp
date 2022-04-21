@@ -4,22 +4,22 @@
 #include "webserv.hpp"
 #include <iostream>
 #include <unistd.h>
+std::vector<Header>::iterator	find_header(std::vector<Header> vec, std::string key);
 
 void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char **env)
 {
 	char	*av[3];
 
 	av[0] = (char *)"python";
-	av[1] = (char *)"serv/cgi-bin/cgi.py";//&path[0];
+	av[1] = &path[0];
 	av[2] = NULL;
-	dup2(fd_i[0], 0);
-	dup2(fd[1], 1);
-	// dup2(fd[0], 0);
-	write(1, body.c_str(), body.size() + 1);
-	close(fd_i[0]);
-	close(fd_i[1]);
-	close(fd[0]);
-	close(fd[1]);
+	//dup2(fd_i[0], 0);
+	//dup2(fd[1], 1);
+	// write(1, body.c_str(), body.size() + 1);
+	// close(fd_i[0]);
+	// close(fd_i[1]);
+	// close(fd[0]);
+	// close(fd[1]);
 	
 	execve("/usr/bin/python", av, NULL);
 }
@@ -33,7 +33,7 @@ struct timeval	zero_time()
 	return (ret);
 }
 
-std::string exec_cgi(std::string path, std::string body, Request const &req)
+std::string exec_cgi(std::string path, Request const &req) //Check if body is ready to send
 {
 	int			fd[2];
 	int			fd_i[2];
@@ -48,7 +48,7 @@ std::string exec_cgi(std::string path, std::string body, Request const &req)
 	if (!fork())
 	{
 		char **env = vec_to_tab(create_env(req));
-		fork_exec(path, fd, fd_i, body, env);		
+		fork_exec(path, fd, fd_i, req.get_body(), env);		
 	}
 	close(fd[1]);
 	close(fd_i[0]);
@@ -68,5 +68,6 @@ std::string exec_cgi(std::string path, std::string body, Request const &req)
 	}
 	if (r != -1)
 		return_string += std::string(tmp);
+	std::cout << "Return of the script " << return_string << std::endl;
 	return (return_string);
 }
