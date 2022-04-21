@@ -1,50 +1,54 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <map>
+#include <stack>
 #include "utils.hpp"
 #include "location_config.hpp"
 
+int has_uneven_brackets(std::ifstream& stream)
+{
+	std::stack<int> brackets;
+
+	int line_counter = 1;
+	std::string word;
+	while (!stream.eof())
+	{
+		stream >> word;
+		if (word == "{") // TODO find a solution to check for multiple brackets following eachother
+			brackets.push(line_counter);
+		else if (word == "}")
+		{
+			std::cout << "brackets.size(): " << brackets.size() << std::endl;
+			if (brackets.size())
+				brackets.pop();
+			else
+			{
+				std::cerr << "Extra '}' on line " << line_counter << std::endl;
+				return 1;
+			}
+		}
+		if (stream.peek() == 10)
+			line_counter++;
+	}
+	if (brackets.empty())
+		return 0;
+	else
+	{
+		std::cerr << "Unclosed '{' on line " << line_counter << std::endl;
+		return 1;
+	}
+}
+
 int main()
 {
-	std::string test = "server {\nallowed_methods GET POST PUT DELETE\nroot server/\nlocation /put_test {\nroot ./YoupiBanane/put_here\nallowed_methods PUT\n}\nlocation /post_test {\nroot ./YoupiBanane/post_test\nallowed_methods POST\n}\n}\n";
-	std::stringstream testStream(test);
-	std::map<std::string, LocationConfig> _locations;
+	std::ifstream ifs("default.conf", std::ifstream::in);
 
-	std::string buffer;
-	while (std::getline(testStream, buffer))
+	if (ifs.good())
 	{
-		std::cout << "-- BUFFER -- [" << buffer << "]" << std::endl;
-		trim(buffer);
-		if (buffer == "}")
-			break;
-		std::stringstream lineStream(buffer);
-		std::string directive;
-		lineStream >> directive;
-		std::string rest;
-		std::string path;
-		switch(directive_from_string(directive))
-		{
-		case location:
-			rest = testStream.str().substr(testStream.tellg());
-			rest.erase(rest.find_first_of('}'));
-			lineStream >> path;
-			_locations.insert(std::make_pair(path, LocationConfig(path, rest)));
-			break;
-		default:
-			break;
-		}
+		if (has_uneven_brackets(ifs))
+			return 1;
 	}
-	for (std::map<std::string, LocationConfig>::iterator it = _locations.begin(); it != _locations.end(); it++)
-	{
-		std::cout << "affected URI: " << it->second.getPath() << std::endl;
-		std::cout << "root directory: " << it->second.getRoot() << std::endl;
-		std::cout << "index file: " << it->second.getIndex() << std::endl;
-		std::cout << "allowed methods:";
-		for (std::set<Method>::iterator itr = it->second.getAllowedMethods().begin(); itr != it->second.getAllowedMethods().end(); itr++)
-			std::cout << " " << to_string(*itr);
-		std::cout << std::endl;
-		std::cout << "is autoindexed?: " << std::boolalpha << it->second.isAutoIndexed() << std::endl;
-		std::cout << "is uploadable?: " << std::boolalpha << it->second.isUploadable() << std::endl;
-	}
+	return 0;
 }

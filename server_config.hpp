@@ -2,7 +2,8 @@
 #define SERVER_CONFIG_HPP
 
 #include <map>
-#include <netinet/in.h>
+#include <set>
+#include <arpa/inet.h>
 #include "location_config.hpp"
 #include "utils.hpp"
 
@@ -23,6 +24,7 @@ private:
 	std::string 							_server_name;
 	struct in_addr							_host;
 	unsigned short							_port;
+	std::set<Method>						_allowed_methods;
 	std::map<std::string, LocationConfig>	_locations;
 };
 
