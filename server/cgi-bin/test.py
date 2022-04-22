@@ -1,10 +1,11 @@
 import os
 
-query = os.getenv('QUERY_STRING')
+query = os.getenv("QUERY_STRING")
+
+print(query)
 
 strings = []
 strings = query.split("&")
-print(strings)
 
 file = open("out", "a")
 file.seek(0, 0)

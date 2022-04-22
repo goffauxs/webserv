@@ -12,9 +12,7 @@
 #include "utils.hpp"
 #include "webserv.hpp"
 
-#include <arpa/inet.h>
-
-#define PORT 8000
+#define PORT 8003
 #define	BUFFSIZE 300000
 
 void	check(int val, std::string msg)
@@ -74,16 +72,17 @@ void	handle_connection(int client_fd)
 	Request req(buff);
 	std::vector<Header> headers = req.get_headers();
 	/* prints headers */
-	// switch (req.get_method())
-	// {
-	// case POST:
-	// 	std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
-	// 	for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
-	// 		std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
-	// 	break;
-	// default:
-	// 	break;
-	// }
+	switch (req.get_method())
+	{
+	case GET:
+		std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
+		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
+			std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
+		std::cout << std::endl;
+		break;
+	default:
+		break;
+	}
 	// std::cout << "body = " << req.get_body() << std::endl;
 
 	response = parse(req);
