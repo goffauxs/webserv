@@ -12,20 +12,19 @@ int has_uneven_brackets(std::ifstream& stream)
 	std::stack<int> brackets;
 
 	int line_counter = 1;
-	std::string word;
+	char curr_char;
 	while (!stream.eof())
 	{
-		stream >> word;
-		if (word == "{") // TODO find a solution to check for multiple brackets following eachother
+		stream.get(curr_char);
+		if (curr_char == '{')
 			brackets.push(line_counter);
-		else if (word == "}")
+		else if (curr_char == '}')
 		{
-			std::cout << "brackets.size(): " << brackets.size() << std::endl;
 			if (brackets.size())
 				brackets.pop();
 			else
 			{
-				std::cerr << "Extra '}' on line " << line_counter << std::endl;
+				std::cerr << "Error: Extra '}' on line " << line_counter << std::endl;
 				return 1;
 			}
 		}
@@ -36,7 +35,7 @@ int has_uneven_brackets(std::ifstream& stream)
 		return 0;
 	else
 	{
-		std::cerr << "Unclosed '{' on line " << line_counter << std::endl;
+		std::cerr << "Error: Unclosed '{' on line " << brackets.top() << std::endl;
 		return 1;
 	}
 }
@@ -49,6 +48,9 @@ int main()
 	{
 		if (has_uneven_brackets(ifs))
 			return 1;
+		ifs.seekg(0, ifs.beg);
+		std::string server_str;
+		
 	}
 	return 0;
 }
