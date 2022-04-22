@@ -58,11 +58,11 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 	}
 	//PATH_INFO in the first line, after the GET/POST, before the "?" or the second " "
 	//Obsolete
-	{
-		std::string	resource(req.get_resource());
-		int			end_l = std::min(resource.find("?"), resource.rfind(" "));
-		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find(" "), resource.size() - end_l));
-	}
+	// {
+	// 	std::string	resource(req.get_resource());
+	// 	int			end_l = std::min(resource.find("?"), resource.rfind(" "));
+	// 	vec_env.push_back("PATH_INFO=" + resource.substr(resource.find(" "), resource.size() - end_l));
+	// }
 	
 	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
 	
@@ -73,7 +73,7 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 		std::string	first_header(req.get_resource());
 
 		if (first_header.find("?") != (size_t)-1)
-			vec_env.push_back("QUERY_STRING=" + first_header.substr(first_header.find("?"), first_header.size() - first_header.rfind(" ")));
+			vec_env.push_back("QUERY_STRING=" + first_header.substr(first_header.find("?")));
 	}
 	
 	//REMOTE_HOST
@@ -128,7 +128,7 @@ char	**vec_to_tab(std::vector<std::string> vec)
 	for (size_t i = 0; i < vec.size(); i++)
 	{
 		tab[i] =(char *) malloc(sizeof(char) * vec[i].size());
-		vec[i].copy(tab[i], vec[i].size(), 0);
+		vec[i].copy(tab[i], vec[i].size() + 1, 0);
 	}
 	tab[vec.size()] = NULL;
 	return (tab);
