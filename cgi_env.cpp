@@ -47,8 +47,9 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 	{
 		std::string	first_header(req.get_resource());
 
+		std::cout << "|first header = " << first_header << "|" << std::endl;
 		if (first_header.find("?") != (size_t)-1)
-			vec_env.push_back("QUERY_STRING=" + first_header.substr(first_header.find("?") + 1, first_header.size() - first_header.rfind(" ") - 1));
+			vec_env.push_back("QUERY_STRING=" + first_header.substr(first_header.find("?") + 1));
 	}
 	
 	//REMOTE_HOST
@@ -100,11 +101,14 @@ char	**vec_to_tab(std::vector<std::string> vec)
 {
 	char	**tab;
 
-	tab = (char **)malloc(sizeof(char *) * vec.size());
+	tab = (char **)malloc(sizeof(char *) * vec.size() + 1);
 	for (size_t i = 0; i < vec.size(); i++)
 	{
-		tab[i] =(char *) malloc(sizeof(char) * vec[i].size());
-		vec[i].copy(tab[i], vec[i].size(), 0);
+		tab[i] =(char *) malloc(sizeof(char) * vec[i].size() + 1);
+		// vec[i].copy(tab[i], vec[i].size(), 0);
+		// tab[i][vec[i].size()] = '\0';
+		strcpy(tab[i], vec[i].c_str());
 	}
+	tab[vec.size()] = NULL;
 	return (tab);
 }

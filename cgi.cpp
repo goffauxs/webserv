@@ -9,9 +9,15 @@ void		fork_exec(std::string path,/* int fd[2], int fd_i[2],*/ std::string body, 
 {
 	char	*av[3];
 
-	av[0] = (char *)"/usr/bin/python";
+	av[0] = (char *)"python";
 	av[1] = (char *)"server/cgi-bin/test.py";//&path[0];
 	av[2] = NULL;
+	int i = 0;
+	while (env[i])
+	{
+		std::cout << "env[" << i << "] = " << env[i] << std::endl;
+		i++;
+	}
 	// dup2(fd_i[0], 0);
 	// dup2(fd[1], 1);
 	// dup2(fd[0], 0);
@@ -21,8 +27,8 @@ void		fork_exec(std::string path,/* int fd[2], int fd_i[2],*/ std::string body, 
 	// close(fd[0]);
 	// close(fd[1]);
 
-	std::cerr << "EXEC PY" << std::endl;
-	execve("/usr/bin/python", av, env);
+	// std::cerr << "EXEC PY" << std::endl;
+	std::cout << "execve return = " << execve("/usr/bin/python", av, env) << std::endl;
 }
 
 // struct timeval	zero_time()
@@ -50,10 +56,11 @@ std::string exec_cgi(std::string path, std::string body, Request const &req)
 	if (!pid)
 	{
 		char **env = vec_to_tab(create_env(req));
-		fork_exec(path,/* fd, fd_i,*/ body, env);		
+		fork_exec(path,/* fd, fd_i,*/ body, env);
+		write(2, "ok\n", 3);
+		exit(0);
 	}
-	else
-		waitpid(-1, NULL, 0);
+	waitpid(-1, NULL, 0);
 	// wait(0);
 	// close(fd[1]);
 	// close(fd_i[0]);
@@ -74,7 +81,5 @@ std::string exec_cgi(std::string path, std::string body, Request const &req)
 	// 	return_string += std::string(tmp);
 	// return (return_string);
 	// sleep(5);
-	if (!pid)
-		exit(0);
 	return ("lol");
 }
