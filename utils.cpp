@@ -128,7 +128,7 @@ std::string to_string(Directive directive)
 		return "index";
 	case server_name:
 		return "server_name";
-	case listen:
+	case directive_listen:
 		return "listen";
 	case location:
 		return "location";
@@ -155,8 +155,8 @@ Directive directive_from_string(const std::string& directive)
 		return default_index;
 	else if (directive == to_string(server_name))
 		return server_name;
-	else if (directive == to_string(listen))
-		return listen;
+	else if (directive == to_string(directive_listen))
+		return directive_listen;
 	else if (directive == to_string(location))
 		return location;
 	else if (directive == to_string(server))

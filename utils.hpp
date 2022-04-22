@@ -36,7 +36,7 @@ enum Directive
 	root,
 	default_index,
 	server_name,
-	listen,
+	directive_listen,
 	location,
 	server,
 	INVALID_DIRECTIVE

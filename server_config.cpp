@@ -40,9 +40,8 @@ ServerConfig::ServerConfig(const std::string& content)
 		case server_name:
 			lineStream >> this->_server_name;
 			break;
-		case listen:
-			std::getline(lineStream, host_str, ':');
-			this->_host.s_addr = inet_addr(host_str.c_str());
+		case directive_listen:
+			std::getline(lineStream, this->_host, ':');
 			lineStream >> this->_port;
 			break;
 		default:
@@ -50,3 +49,11 @@ ServerConfig::ServerConfig(const std::string& content)
 		}
 	}
 }
+
+const std::string& ServerConfig::getHost() const { return _host; }
+const std::string& ServerConfig::getPort() const { return _port; }
+const std::string& ServerConfig::getRoot() const { return _root; }
+const std::string& ServerConfig::getIndex() const { return _index; }
+const std::string& ServerConfig::getServerName() const { return _server_name; }
+const std::map<std::string, LocationConfig>& ServerConfig::getLocations() const { return _locations; }
+const std::set<Method>& ServerConfig::getAllowedMethods() const { return _allowed_methods; }
