@@ -105,8 +105,6 @@ char	**vec_to_tab(std::vector<std::string> vec)
 	for (size_t i = 0; i < vec.size(); i++)
 	{
 		tab[i] =(char *) malloc(sizeof(char) * vec[i].size() + 1);
-		// vec[i].copy(tab[i], vec[i].size(), 0);
-		// tab[i][vec[i].size()] = '\0';
 		strcpy(tab[i], vec[i].c_str());
 	}
 	tab[vec.size()] = NULL;
