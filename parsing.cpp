@@ -20,7 +20,6 @@ std::string	request_get(Request const &req)
 	{
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
 		std::string	res = exec_cgi("cgi/test.py", "", req);
-		std::cout << "res = " << res << std::endl;
 	}
 	else
 		action = req.get_resource();
@@ -90,8 +89,8 @@ std::string	request_post(Request const &req)
 	size_t	size = req.get_contentLength() - (posStart - posSecBound) - (secBound.size() + 6);
 	char	*content = new char[size];
 
-	int j = 0;
-	for (int i = posStart; i < posStart + size; i++)
+	size_t j = 0;
+	for (size_t i = posStart; i < posStart + size; i++)
 	{
 		content[j] = req.get_content()[i];
 		j++;

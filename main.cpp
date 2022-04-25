@@ -65,9 +65,10 @@ void	handle_connection(int client_fd)
 
 	memset(buff, '\0', BUFFSIZE);
 
-	int bytes_read = read(client_fd, buff, BUFFSIZE);
+	int	bytes_read = recv(client_fd, buff, BUFFSIZE, 0);
+	// int bytes_read = read(client_fd, buff, BUFFSIZE);
 	check(bytes_read, "read error");
-	// std::cout << buff << std::endl;
+	std::cout << buff << std::endl;
 
 	Request req(buff);
 	std::vector<Header> headers = req.get_headers();

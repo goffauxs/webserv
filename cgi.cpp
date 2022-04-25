@@ -52,6 +52,5 @@ std::string exec_cgi(std::string path, std::string body, Request const &req)
 		tmp[r] = 0;
 		return_string += std::string(tmp);
 	}
-	std::cout << "return of the string = " << return_string << std::endl;
 	return (return_string);
 }
