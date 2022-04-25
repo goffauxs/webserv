@@ -4,6 +4,7 @@
 #include "webserv.hpp"
 #include <iostream>
 #include <unistd.h>
+std::vector<Header>::iterator	find_header(std::vector<Header> vec, std::string key);
 
 void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char **env)
 {
@@ -35,11 +36,10 @@ std::string exec_cgi(std::string path, std::string body, Request const &req)
 
 	pipe(fd);
 	pipe(fd_i);
-	int pid = fork();
-	if (!pid)
+	if (!fork())
 	{
 		char **env = vec_to_tab(create_env(req));
-		fork_exec(path, fd, fd_i, body, env);
+		fork_exec(path, fd, fd_i, req.get_body(), env);		
 	}
 	close(fd[1]);
 	close(fd_i[0]);

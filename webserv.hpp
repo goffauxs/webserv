@@ -8,6 +8,6 @@
 
 std::string	parse(Request const &req);
 
-std::string exec_cgi(std::string path, std::string body, Request const &req);
+std::string exec_cgi(std::string path, Request const &req);
 char	**vec_to_tab(std::vector<std::string> vec);
 std::vector<std::string>    create_env(Request const &req/*, also the parse of the conf file*/);
