@@ -55,5 +55,14 @@ const std::string& ServerConfig::getPort() const { return _port; }
 const std::string& ServerConfig::getRoot() const { return _root; }
 const std::string& ServerConfig::getIndex() const { return _index; }
 const std::string& ServerConfig::getServerName() const { return _server_name; }
-const std::map<std::string, LocationConfig>& ServerConfig::getLocations() const { return _locations; }
+const std::map<std::string, LocationConfig>& ServerConfig::getLocationMap() const { return _locations; }
 const std::set<Method>& ServerConfig::getAllowedMethods() const { return _allowed_methods; }
+
+const LocationConfig& ServerConfig::getLocation(const std::string& path) const
+{
+	std::map<std::string, LocationConfig>::const_iterator it = this->_locations.find(path);
+	if (it != this->_locations.end())
+		return it->second;
+	else
+		throw NotFoundLocation();
+}
