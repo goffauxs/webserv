@@ -11,7 +11,7 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char
 	char	*av[3];
 
 	av[0] = (char *)"python";
-	av[1] = (char *)"server/cgi-bin/test.py";//&path[0];
+	av[1] = (char *)/*"server/cgi-bin/test.py";*/path.c_str();
 	av[2] = NULL;
 	dup2(fd_i[0], 0);
 	dup2(fd[1], 1);
@@ -27,7 +27,7 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char
 	exit(1);
 }
 
-std::string exec_cgi(std::string path, std::string body, Request const &req)
+std::string exec_cgi(std::string path,/* std::string body,*/ Request const &req)
 {
 	int			fd[2];
 	int			fd_i[2];
@@ -39,7 +39,7 @@ std::string exec_cgi(std::string path, std::string body, Request const &req)
 	if (!fork())
 	{
 		char **env = vec_to_tab(create_env(req));
-		fork_exec(path, fd, fd_i, req.get_body(), env);		
+		fork_exec(path, fd, fd_i, req.get_content(), env);		
 	}
 	close(fd[1]);
 	close(fd_i[0]);
