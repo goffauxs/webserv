@@ -1,21 +1,21 @@
-import os
+#!/usr/bin/python)
 
-query = os.getenv("QUERY_STRING")
+# Import modules for CGI handling 
+import cgi, cgitb 
 
-print(query)
+# Create instance of FieldStorage 
+form = cgi.FieldStorage() 
 
-strings = []
-strings = query.split("&")
+# Get data from fields
+user_name = form.getvalue('user_name')
+user_message  = form.getvalue('user_message')
 
-file = open("out", "a")
-file.seek(0, 0)
-file.truncate()
-
-i = 0
-len = len(strings)
-while i < len:
-	file.write(strings[i])
-	file.write("\n")
-	i += 1
-
-file.close()
+print ("Content-type:text/html\r\n\r\n")
+print ("<html>")
+print ("<head>")
+print ("<title>Hello - Second CGI Program</title>")
+print ("</head>")
+print ("<body>")
+print ("<h2>Hello %s %s</h2>" % (user_name, user_message))
+print ("</body>")
+print ("</html>")
