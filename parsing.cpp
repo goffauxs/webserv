@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "header.hpp"
 #include "request.hpp"
 #include "utils.hpp"
@@ -16,11 +17,14 @@ std::string	request_get(Request const &req)
 	std::string	path = "server";
 	std::string	action;
 
-	std::cout << req.get_resource() << std::endl;
 	if (req.get_resource().find("?") != (size_t)-1)
 	{
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
-		exec_cgi("cgi/test.py", req);
+		std::string res = exec_cgi(path + "/cgi-bin/test.py", req);
+		std::cout << "res = " << res << std::endl;
+
+		size_t	len = res.substr(res.find("\n\n") + 2).length();
+		return ("HTTP/1.1 200 OK\nContent-Length: " + std::to_string(len) + "\n" + res);
 	}
 	else
 		action = req.get_resource();
@@ -76,30 +80,33 @@ std::string	request_delete(Request const &req)
 
 std::string	request_post(Request const &req)
 {
-	std::string	buffString = req.get_content();
-	size_t	posBound = buffString.find("boundary=") + 9;
-	std::string	boundary = buffString.substr(posBound, buffString.find("\r", posBound) - posBound);
+	// exec_cgi("server/cgi-bin/test.py", req.get_content(), req);
+	// std::string	buffString = req.get_request();
+	// size_t	posBound = buffString.find("boundary=") + 9;
+	// std::string	boundary = buffString.substr(posBound, buffString.find("\r", posBound) - posBound);
+	// std::cout << "bound = "<< boundary << std::endl;
 
-	std::string	secBound = boundary;
-	secBound.insert(0, "--");
-	size_t	posSecBound = buffString.find(secBound);
-	size_t	posCT = buffString.find("Content-Type", posSecBound);
-	size_t	posStart = buffString.find("\n", posCT);
-	posStart += 3;
+	// std::string	secBound = boundary;
+	// secBound.insert(0, "--");
+	// size_t	posSecBound = buffString.find(secBound);
+	// size_t	posCT = buffString.find("Content-Type", posSecBound);
+	// size_t	posStart = buffString.find("\n", posCT);
+	// posStart += 3;
 
-	size_t	size = req.get_contentLength() - (posStart - posSecBound) - (secBound.size() + 6);
-	char	*content = new char[size];
+	// size_t	size = req.get_contentLength() - (posStart - posSecBound) - (secBound.size() + 6);
+	// std::cout << "size = " << size << std::endl;
+	// char	*content = new char[size];
 
-	int j = 0;
-	for (int i = posStart; i < posStart + size; i++)
-	{
-		content[j] = req.get_content()[i];
-		j++;
-	}
-	std::cout << std::endl;
+	// size_t j = 0;
+	// for (size_t i = posStart; i < posStart + size; i++)
+	// {
+	// 	content[j] = req.get_request()[i];
+	// 	j++;
+	// }
+	// std::cout << std::endl;
 
-	FILE	*file = fopen("test.png", "w");
-	write(fileno(file), content, size);
+	// FILE	*file = fopen("test.png", "w");
+	// write(fileno(file), content, size);
 
 	return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 30\n\nThis method is not yet handled");
 }

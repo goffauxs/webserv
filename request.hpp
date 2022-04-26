@@ -2,6 +2,7 @@
 #define REQUEST_HPP
 
 #include <stdlib.h>
+#include <iostream>
 #include "header.hpp"
 
 class Request
@@ -11,7 +12,7 @@ public:
 		: _version(version), _method(method), _resource(resource), _headers(headers) {}
 	Request(char *buff)
 	{
-		this->_content = buff;
+		this->_request = buff;
 		std::string	request = buff;
 		std::stringstream requestStream(request);
 		std::string request_line;
@@ -30,6 +31,7 @@ public:
 			this->_headers.push_back(tmp);
 		}
 
+		//get content-length
 		std::vector<Header> headers = this->_headers;
 		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
 			if (it->get_key() == "Content-Length")
@@ -38,16 +40,31 @@ public:
 				break ;
 			}
 
-		this->_body = requestStream.str().substr(requestStream.tellg());
-
-
+		//get body
+		this->_content = NULL;
+		size_t	i;
+		size_t	j = 0;
+		switch (this->_method)
+		{
+			case POST:
+				i = request.find("\r\n\r\n");
+				i += 4;
+				j = 0;
+				this->_content = new char[this->_contentLength];
+				while (j < this->_contentLength)
+					this->_content[j++] = buff[i++];
+				this->_content[j] = '\0';
+				break ;
+			default:
+				break ;
+		}
 	}
 
 	Method get_method() const { return this->_method; }
 	Version get_version() const { return this->_version; }
 	std::string get_resource() const { return this->_resource; }
 	std::vector<Header> get_headers() const { return this->_headers; }
-	std::string	get_body() const { return this->_body; }
+	char	*get_request() const { return this->_request; }
 	char	*get_content() const { return this->_content; }
 	size_t	get_contentLength() const { return this->_contentLength; }
 
@@ -71,9 +88,9 @@ private:
 	Method _method;
 	std::string _resource;
 	std::vector<Header> _headers;
-	char	*_content;
+	char	*_request;
+	char	*_content; //to delete in destructor or we can use vector of char but less convenient
 	size_t	_contentLength;
-	std::string	_body;
 };
 
 #endif /* REQUEST_HPP */

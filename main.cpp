@@ -66,24 +66,24 @@ void	handle_connection(int client_fd)
 
 	memset(buff, '\0', BUFFSIZE);
 
-	int bytes_read = read(client_fd, buff, BUFFSIZE);
+	int	bytes_read = recv(client_fd, buff, BUFFSIZE, 0);
 	check(bytes_read, "read error");
-	// std::cout << buff << std::endl;
+	std::cout << buff << std::endl;
 
 	Request req(buff);
 	std::vector<Header> headers = req.get_headers();
 	/* prints headers */
-	switch (req.get_method())
-	{
-	case GET:
-		std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
-		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
-			std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
-		std::cout << std::endl;
-		break;
-	default:
-		break;
-	}
+	// switch (req.get_method())
+	// {
+	// 	case GET:
+	// 		std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
+	// 		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
+	// 			std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
+	// 		std::cout << std::endl;
+	// 		break;
+	// 	default:
+	// 		break;
+	// }
 	// std::cout << "body = " << req.get_body() << std::endl;
 
 	response = parse(req);
