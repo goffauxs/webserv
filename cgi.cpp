@@ -6,12 +6,12 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char **env)
+void		fork_exec(std::string path, int fd[2], int fd_i[2], char *body, char **env)
 {
 	char	*av[3];
 
 	av[0] = (char *)"python";
-	av[1] = (char *)/*"server/cgi-bin/test.py";*/path.c_str();
+	av[1] = (char *)"server/cgi-bin/test.py";/*path.c_str();*/
 	av[2] = NULL;
 	dup2(fd_i[0], 0);
 	dup2(fd[1], 1);
@@ -45,14 +45,12 @@ std::string exec_cgi(std::string path, Request const &req)
 	close(fd_i[0]);
 	wait(0);
 	int r = read(fd[0], tmp, 10);
-	std::cout << "r = " << r << std::endl;
 	return_string += std::string(tmp);
 	while (r > 0)
 	{
 		r = read(fd[0], tmp, 10);
 		tmp[r] = 0;
 		return_string += std::string(tmp);
-		std::cout << "return string = " << return_string << std::endl;
 	}
 	std::cout << "return of the string = " << return_string << std::endl;
 	return (return_string);

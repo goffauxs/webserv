@@ -41,6 +41,7 @@ public:
 			}
 
 		//get body
+		this->_content = NULL;
 		size_t	i;
 		size_t	j = 0;
 		switch (this->_method)
