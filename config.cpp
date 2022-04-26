@@ -35,6 +35,18 @@ Config::Config(const std::string& path)
 	}
 }
 
+const ServerConfig& Config::getServerConfig(const std::string& port, const std::string& server_name) const
+{
+	std::list<ServerConfig> applicable;
+	for (std::list<ServerConfig>::const_iterator it = _list.begin(); it != _list.end(); it++)
+	{
+		if (it->getPort() == port)
+			applicable.push_back(*it);
+	}
+	if (applicable.size() == 0)
+		; // TODO finish this server selection
+}
+
 int Config::has_uneven_brackets(std::ifstream& stream)
 {
 	std::stack<int> brackets;

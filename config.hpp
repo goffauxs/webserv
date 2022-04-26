@@ -12,10 +12,10 @@ class Config
 {
 public:
 	Config(const std::string& path);
-	Config(const Config& other);
+	// Config(const Config& other);
 	Config& operator=(const Config& other);
 
-	const ServerConfig& getServerConfig(const std::string& port) const;
+	const ServerConfig& getServerConfig(const std::string& port, const std::string& server_name) const;
 	class BracketException : public std::exception
 	{
 	private:

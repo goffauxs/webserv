@@ -8,98 +8,11 @@
 #include "utils.hpp"
 #include "server_config.hpp"
 #include "location_config.hpp"
-
-int has_uneven_brackets(std::ifstream& stream)
-{
-	std::stack<int> brackets;
-
-	int line_counter = 1;
-	char curr_char;
-	while (!stream.eof())
-	{
-		stream.get(curr_char);
-		if (curr_char == '{')
-			brackets.push(line_counter);
-		else if (curr_char == '}')
-		{
-			if (brackets.size())
-				brackets.pop();
-			else
-			{
-				std::cerr << "Error: Extra '}' on line " << line_counter << std::endl;
-				return 1;
-			}
-		}
-		if (stream.peek() == 10)
-			line_counter++;
-	}
-	if (brackets.empty())
-		return 0;
-	else
-	{
-		std::cerr << "Error: Unclosed '{' on line " << brackets.top() << std::endl;
-		return 1;
-	}
-}
-
-void advance_to_next_bracket(std::ifstream& stream)
-{
-	std::stack<bool> brackets;
-
-	char curr_char;
-	std::string server;
-	while (server != "server" && !stream.eof())
-		stream >> server;
-	if (stream.eof())
-		return;
-	stream >> server;
-	if (server == "{")
-		brackets.push(true);
-	else
-		std::cerr << "Error: Unexpected token after server" << std::endl;
-	while (!stream.eof())
-	{
-		stream.get(curr_char);
-		if (curr_char == '{')
-			brackets.push(true);
-		else if (curr_char == '}')
-			brackets.pop();
-		if (brackets.empty())
-			return ;
-	}
-}
+#include "config.hpp"
 
 int main()
 {
-	std::list<ServerConfig> list;
-	std::ifstream ifs("default.conf", std::ifstream::in);
-
-	if (ifs.good())
-	{
-		if (has_uneven_brackets(ifs))
-			return 1;
-		ifs.seekg(0, ifs.beg);
-		char* server_str;
-		std::ifstream::streampos begin = ifs.tellg();
-		std::ifstream::streampos end;
-		std::streamsize diff;
-		while (!ifs.eof())
-		{
-			advance_to_next_bracket(ifs);
-			if (ifs.eof())
-				break;
-			end = ifs.tellg();
-			diff = end - begin;
-			ifs.seekg(begin);
-			server_str = new char[diff + 1];
-			ifs.read(server_str, diff);
-			server_str[diff] = '\0';
-			std::string tmp(server_str);
-			list.push_back(ServerConfig(tmp));
-			delete server_str;
-			begin = end;
-		}
-	}
+	Config("default.conf");
 	// for (std::list<ServerConfig>::iterator it = list.begin(); it != list.end(); it++)
 	// {
 	// 	std::cout << "--- SERVER ---" << std::endl;
