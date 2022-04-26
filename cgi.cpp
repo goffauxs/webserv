@@ -12,8 +12,8 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char
 {
 	char	*av[3];
 
-	av[0] = (char *)"python";
-	av[1] = (char *)"server/cgi-bin/test.py";//&path[0];
+	av[0] = (char *)"python2.7";
+	av[1] = (char *)"server/cgi-bin/test2.py";//&path[0];
 	av[2] = NULL;
 	dup2(fd_i[0], 0);
 	dup2(fd[1], 1);
@@ -24,7 +24,9 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char
 	close(fd[0]);
 	close(fd[1]);
 
-	execve("/usr/bin/python", av, env);
+	execve("/usr/bin/python2.7", av, env);
+	perror("The error is :");
+	std::cout << "ERROR\n";
 	free_tab(env);
 	exit(1);
 }
