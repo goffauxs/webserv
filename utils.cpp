@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include <algorithm>
 
 std::vector<std::string> split(const std::string& str, const std::string& delim)
 {
@@ -43,6 +44,7 @@ std::string to_string(Method method)
 	case PATCH:
 		return "PATCH";
 	}
+	return ("");
 }
 
 Method method_from_string(const std::string& method)
@@ -80,6 +82,7 @@ std::string to_string(Version version)
 	case HTTP_2_0:
 		return "HTTP/2.0";
 	}
+	return ("");
 }
 
 Version version_from_string(const std::string& version)

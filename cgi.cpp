@@ -4,6 +4,8 @@
 #include "webserv.hpp"
 #include <iostream>
 #include <unistd.h>
+#include <sys/wait.h>
+
 std::vector<Header>::iterator	find_header(std::vector<Header> vec, std::string key);
 
 void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char **env)
@@ -23,11 +25,11 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char
 	close(fd[1]);
 
 	execve("/usr/bin/python", av, env);
-	perror("execve error:");
+	free_tab(env);
 	exit(1);
 }
 
-std::string exec_cgi(std::string path,/* std::string body,*/ Request const &req)
+std::string exec_cgi(std::string path, Request const &req)
 {
 	int			fd[2];
 	int			fd_i[2];
@@ -52,5 +54,6 @@ std::string exec_cgi(std::string path,/* std::string body,*/ Request const &req)
 		tmp[r] = 0;
 		return_string += std::string(tmp);
 	}
+	std::cout << "return of the string = " << return_string << std::endl;
 	return (return_string);
 }
