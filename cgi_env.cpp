@@ -4,6 +4,7 @@
 #include "header.hpp"
 #include "request.hpp"
 #include "webserv.hpp"
+#include <string.h>
 
 std::vector<Header>::iterator	find_header(std::vector<Header> vec, std::string key);
 
@@ -125,12 +126,26 @@ char	**vec_to_tab(std::vector<std::string> vec)
 {
 	char	**tab;
 
-	tab = (char **)malloc(sizeof(char *) * vec.size() + 1);
+	//tab = (char **)malloc(sizeof(char *) * vec.size() + 1);
+	tab = new char*[vec.size() + 1];
 	for (size_t i = 0; i < vec.size(); i++)
 	{
-		tab[i] =(char *) malloc(sizeof(char) * vec[i].size() + 1);
+		//tab[i] =(char *) malloc(sizeof(char) * vec[i].size() + 1);
+		tab[i] = new char[vec[i].size() + 1];
 		strcpy(tab[i], vec[i].c_str());
 	}
 	tab[vec.size()] = NULL;
 	return (tab);
+}
+
+void	free_tab(char **tab)
+{
+	size_t	i = 0;
+
+	while(tab[i])
+	{
+		delete [] tab[i];
+		i++;
+	}
+	delete [] tab;
 }

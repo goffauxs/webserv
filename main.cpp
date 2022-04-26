@@ -11,6 +11,7 @@
 #include "request.hpp"
 #include "utils.hpp"
 #include "webserv.hpp"
+#include <string.h>
 
 #define PORT 8001
 #define	BUFFSIZE 300000
