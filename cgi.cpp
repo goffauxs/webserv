@@ -16,7 +16,7 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], char *body, char **env
 	dup2(fd_i[0], 0);
 	dup2(fd[1], 1);
 	dup2(fd[0], 0);
-	// write(1, body.c_str(), body.size() + 1);
+	// write(1, body, body.size() + 1);
 	close(fd_i[0]);
 	close(fd_i[1]);
 	close(fd[0]);
@@ -52,6 +52,5 @@ std::string exec_cgi(std::string path, Request const &req)
 		tmp[r] = 0;
 		return_string += std::string(tmp);
 	}
-	std::cout << "return of the string = " << return_string << std::endl;
 	return (return_string);
 }

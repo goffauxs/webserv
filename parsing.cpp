@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "header.hpp"
 #include "request.hpp"
 #include "utils.hpp"
@@ -21,7 +22,9 @@ std::string	request_get(Request const &req)
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
 		std::string res = exec_cgi(path + "/cgi-bin/test.py", req);
 		std::cout << "res = " << res << std::endl;
-		return (res);
+
+		size_t	len = res.substr(res.find("\n\n") + 2).length();
+		return ("HTTP/1.1 200 OK\nContent-Length: " + std::to_string(len) + "\n" + res);
 	}
 	else
 		action = req.get_resource();
