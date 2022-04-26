@@ -13,7 +13,7 @@
 #include "webserv.hpp"
 #include <string.h>
 
-#define PORT 8000
+#define PORT 8001
 #define	BUFFSIZE 300000
 
 void	check(int val, std::string msg)

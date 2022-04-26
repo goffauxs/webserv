@@ -21,7 +21,7 @@ std::string	request_get(Request const &req)
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
 		std::string res = exec_cgi(path + "/cgi-bin/test.py", req);
 		std::cout << "res = " << res << std::endl;
-		return (res);
+		// return (res);
 	}
 	else
 		action = req.get_resource();

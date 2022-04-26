@@ -6,8 +6,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-std::vector<Header>::iterator	find_header(std::vector<Header> vec, std::string key);
-
 void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char **env)
 {
 	char	*av[3];
@@ -25,7 +23,7 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], std::string body, char
 	close(fd[1]);
 
 	execve("/usr/bin/python", av, env);
-	free_tab(env);
+	perror("The error is :");
 	exit(1);
 }
 
@@ -47,12 +45,14 @@ std::string exec_cgi(std::string path, Request const &req)
 	close(fd_i[0]);
 	wait(0);
 	int r = read(fd[0], tmp, 10);
+	std::cout << "r = " << r << std::endl;
 	return_string += std::string(tmp);
 	while (r > 0)
 	{
 		r = read(fd[0], tmp, 10);
 		tmp[r] = 0;
 		return_string += std::string(tmp);
+		std::cout << "return string = " << return_string << std::endl;
 	}
 	std::cout << "return of the string = " << return_string << std::endl;
 	return (return_string);
