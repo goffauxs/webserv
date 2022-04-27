@@ -134,6 +134,10 @@ std::string to_string(Directive directive)
 		return "location";
 	case server:
 		return "server";
+	case client_body_buffer_size:
+		return "client_body_buffer_size";
+	case cgi_ext:
+		return "cgi_ext";
 	default:
 		return "invalid";
 	}
@@ -161,6 +165,10 @@ Directive directive_from_string(const std::string& directive)
 		return location;
 	else if (directive == to_string(server))
 		return server;
+	else if (directive == to_string(client_body_buffer_size))
+		return client_body_buffer_size;
+	else if (directive == to_string(cgi_ext))
+		return cgi_ext;
 	else
 		return INVALID_DIRECTIVE;
 }

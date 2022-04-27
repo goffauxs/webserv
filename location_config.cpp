@@ -39,6 +39,9 @@ LocationConfig::LocationConfig(const std::string& path, const std::string& conte
 		case default_index:
 			lineStream >> this->_index;
 			break;
+		case client_body_buffer_size:
+			lineStream >> this->_client_body_buffer_size;
+			break;
 		default:
 			break;
 		}
@@ -50,10 +53,12 @@ LocationConfig::LocationConfig(const LocationConfig& other)
 {
 }
 
-const std::string& 		LocationConfig::getPath() const				{ return this->_path; }
-const std::set<Method>&	LocationConfig::getAllowedMethods() const	{ return this->_allowed_methods; }
-bool 					LocationConfig::isAutoIndexed() const		{ return this->_autoindex; }
-bool 					LocationConfig::isUploadable() const		{ return this->_upload; }
-const std::string&		LocationConfig::getUploadDir() const		{ return this->_upload_dir; }
-const std::string& 		LocationConfig::getRoot() const				{ return this->_root; }
-const std::string& 		LocationConfig::getIndex() const			{ return this->_index; }
+const std::string& 		LocationConfig::getPath() const					{ return this->_path; }
+const std::set<Method>&	LocationConfig::getAllowedMethods() const		{ return this->_allowed_methods; }
+bool 					LocationConfig::isAutoIndexed() const			{ return this->_autoindex; }
+bool 					LocationConfig::isUploadable() const			{ return this->_upload; }
+const std::string&		LocationConfig::getUploadDir() const			{ return this->_upload_dir; }
+const std::string& 		LocationConfig::getRoot() const					{ return this->_root; }
+const std::string& 		LocationConfig::getIndex() const				{ return this->_index; }
+const std::string&		LocationConfig::getCgiExtenstion() const 		{ return this->_cgi_ext; }
+size_t					LocationConfig::getClientBodyBufferSize() const	{ return this->_client_body_buffer_size; }

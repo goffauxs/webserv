@@ -12,7 +12,16 @@
 
 int main()
 {
-	Config("default.conf");
+	try
+	{
+		Config config("default.conf");
+		ServerConfig conf = config.getServerConfig("8000", "youpi");
+		std::cout << "server root: " << conf.getRoot() << std::endl;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 	// for (std::list<ServerConfig>::iterator it = list.begin(); it != list.end(); it++)
 	// {
 	// 	std::cout << "--- SERVER ---" << std::endl;

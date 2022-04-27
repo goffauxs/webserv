@@ -11,12 +11,15 @@ class ServerConfig
 {
 public:
 	ServerConfig(const std::string& content);
+	ServerConfig(const ServerConfig& other);
+	ServerConfig& operator=(const ServerConfig& rhs);
 
 	const std::string& 								getRoot() const;
 	const std::string& 								getIndex() const;
 	const std::string& 								getServerName() const;
 	const std::string&								getHost() const;
 	const std::string&								getPort() const;
+	size_t											getClientBodyBufferSize() const;
 	const LocationConfig&							getLocation(const std::string& path) const;
 	const std::map<std::string, LocationConfig>&	getLocationMap() const;
 	const std::set<Method>&							getAllowedMethods() const;
@@ -29,11 +32,12 @@ public:
 		}
 	};
 private:
-	std::string 							_root;
+	std::string								_root;
 	std::string								_index;
-	std::string 							_server_name;
+	std::string								_server_name;
 	std::string								_host;
 	std::string								_port;
+	size_t									_client_body_buffer_size;
 	std::set<Method>						_allowed_methods;
 	std::map<std::string, LocationConfig>	_locations;
 };

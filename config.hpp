@@ -15,7 +15,7 @@ public:
 	// Config(const Config& other);
 	Config& operator=(const Config& other);
 
-	const ServerConfig& getServerConfig(const std::string& port, const std::string& server_name) const;
+	ServerConfig getServerConfig(const std::string& port, const std::string& server_name) const;
 	class BracketException : public std::exception
 	{
 	private:
@@ -26,6 +26,7 @@ public:
 			_str = (open) ? "Error: Unclosed '{' on line " : "Error: Extra '}' on line ";
 			_str += line;
 		}
+		virtual ~BracketException() throw() { return ; }
 		const char* what() const throw()
 		{
 			return _str.c_str();

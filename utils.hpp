@@ -39,6 +39,8 @@ enum Directive
 	directive_listen,
 	location,
 	server,
+	client_body_buffer_size,
+	cgi_ext,
 	INVALID_DIRECTIVE
 };
 

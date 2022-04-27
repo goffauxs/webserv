@@ -44,10 +44,36 @@ ServerConfig::ServerConfig(const std::string& content)
 			std::getline(lineStream, this->_host, ':');
 			lineStream >> this->_port;
 			break;
+		case client_body_buffer_size:
+			lineStream >> this->_client_body_buffer_size;
+			break;
 		default:
 			break;
 		}
 	}
+}
+
+ServerConfig& ServerConfig::operator=(const ServerConfig& rhs)
+{
+	if (this != &rhs)
+	{
+		_root = rhs._root;
+		_index = rhs._index;
+		_server_name = rhs._server_name;
+		_host = rhs._host;
+		_port = rhs._port;
+		_client_body_buffer_size = rhs._client_body_buffer_size;
+		_allowed_methods = rhs._allowed_methods;
+		_locations = rhs._locations;
+	}
+	return *this;
+}
+
+ServerConfig::ServerConfig(const ServerConfig& other)
+	: _root(other._root), _index(other._index), _server_name(other._server_name),
+		_host(other._host), _port(other._port), _client_body_buffer_size(other._client_body_buffer_size),
+		_allowed_methods(other._allowed_methods), _locations(other._locations)
+{
 }
 
 const std::string& ServerConfig::getHost() const { return _host; }
@@ -57,6 +83,7 @@ const std::string& ServerConfig::getIndex() const { return _index; }
 const std::string& ServerConfig::getServerName() const { return _server_name; }
 const std::map<std::string, LocationConfig>& ServerConfig::getLocationMap() const { return _locations; }
 const std::set<Method>& ServerConfig::getAllowedMethods() const { return _allowed_methods; }
+size_t ServerConfig::getClientBodyBufferSize() const	{ return this->_client_body_buffer_size; }
 
 const LocationConfig& ServerConfig::getLocation(const std::string& path) const
 {
