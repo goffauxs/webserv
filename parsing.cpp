@@ -80,7 +80,11 @@ std::string	request_delete(Request const &req)
 
 std::string	request_post(Request const &req)
 {
-	// exec_cgi("server/cgi-bin/test.py", req.get_content(), req);
+	std::string res = exec_cgi("server/cgi-bin/test.py", req);
+	std::cout << "res = " << res << std::endl;
+
+	size_t	len = res.substr(res.find("\n\n") + 2).length();
+	return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(len) + "\n" + res);
 	// std::string	buffString = req.get_request();
 	// size_t	posBound = buffString.find("boundary=") + 9;
 	// std::string	boundary = buffString.substr(posBound, buffString.find("\r", posBound) - posBound);
