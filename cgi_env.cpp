@@ -87,7 +87,11 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 		vec_env.push_back("CONTENT_TYPE=" + it->get_value());
 	}
 
-	//CONTENT_LENGTH TODO
+	//CONTENT_LENGTH
+	if (headers[0].get_key() == "POST")
+	{
+		vec_env.push_back("CONTENT_LENGTH=" + std::to_string(req.get_contentLength()));
+	}
 
 	//HTTP_ACCEPT is define in the http request with the key "Accept"
 	it = find_header(headers, "Accept");
