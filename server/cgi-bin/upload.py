@@ -1,10 +1,10 @@
 import sys
 
-data = sys.stdin.readlines()
-print ("Content-type:text/html\n")
-print ("Content-type:text/html\n")
-print ("<html>")
-print ("<head>")
-print (data)
-print ("</body>")
-print ("</html>")
+data = sys.stdin.read()
+
+print("<html>")
+print("<head>")
+for arg in data:
+	print(arg + "</br>")
+print("</body>")
+print("</html>")

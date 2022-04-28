@@ -82,16 +82,12 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 	//REMOTE_ADDR
 	//CONTENT_TYPE Only for POST request, is define in the http request with the key "Content-Type"
 	it = find_header(headers, "Content-Type");
-	if (headers[0].get_key() == "POST" && it != headers.end())
-	{
+	if (req.get_method() == POST && it != headers.end())
 		vec_env.push_back("CONTENT_TYPE=" + it->get_value());
-	}
 
 	//CONTENT_LENGTH
-	if (headers[0].get_key() == "POST")
-	{
+	if (req.get_method() == POST)
 		vec_env.push_back("CONTENT_LENGTH=" + std::to_string(req.get_contentLength()));
-	}
 
 	//HTTP_ACCEPT is define in the http request with the key "Accept"
 	it = find_header(headers, "Accept");

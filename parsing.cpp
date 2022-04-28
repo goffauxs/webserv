@@ -81,38 +81,10 @@ std::string	request_delete(Request const &req)
 std::string	request_post(Request const &req)
 {
 	std::string res = exec_cgi("server/cgi-bin/test.py", req);
-	std::cout << "res = " << res << std::endl;
+	// std::cout << "res = " << res << std::endl;
 
-	size_t	len = res.substr(res.find("\n\n") + 2).length();
-	return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(len) + "\n" + res);
-	// std::string	buffString = req.get_request();
-	// size_t	posBound = buffString.find("boundary=") + 9;
-	// std::string	boundary = buffString.substr(posBound, buffString.find("\r", posBound) - posBound);
-	// std::cout << "bound = "<< boundary << std::endl;
-
-	// std::string	secBound = boundary;
-	// secBound.insert(0, "--");
-	// size_t	posSecBound = buffString.find(secBound);
-	// size_t	posCT = buffString.find("Content-Type", posSecBound);
-	// size_t	posStart = buffString.find("\n", posCT);
-	// posStart += 3;
-
-	// size_t	size = req.get_contentLength() - (posStart - posSecBound) - (secBound.size() + 6);
-	// std::cout << "size = " << size << std::endl;
-	// char	*content = new char[size];
-
-	// size_t j = 0;
-	// for (size_t i = posStart; i < posStart + size; i++)
-	// {
-	// 	content[j] = req.get_request()[i];
-	// 	j++;
-	// }
-	// std::cout << std::endl;
-
-	// FILE	*file = fopen("test.png", "w");
-	// write(fileno(file), content, size);
-
-	return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 30\n\nThis method is not yet handled");
+	// size_t	len = res.substr(res.find("\n\n") + 2).length();
+	return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
 }
 
 std::string	parse(Request const &req)

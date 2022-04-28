@@ -16,10 +16,7 @@ void		fork_exec(std::string path, int in[2],int out[2], Request const &req, char
 	dup2(in[0], 0);
 	dup2(out[1], 1);
 	if (req.get_content())
-	{
 		write(in[1], req.get_content(), req.get_contentLength());
-		write(in[1], "lol", 3);
-	}
 	close(out[0]);
 	close(out[1]);
 	close(in[1]);
