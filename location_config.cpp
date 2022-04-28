@@ -42,6 +42,8 @@ LocationConfig::LocationConfig(const std::string& path, const std::string& conte
 		case client_body_buffer_size:
 			lineStream >> this->_client_body_buffer_size;
 			break;
+		case cgi_ext:
+			lineStream >> this->_cgi_ext;
 		default:
 			break;
 		}
@@ -49,7 +51,7 @@ LocationConfig::LocationConfig(const std::string& path, const std::string& conte
 }
 
 LocationConfig::LocationConfig(const LocationConfig& other)
-	: _path(other._path), _allowed_methods(other._allowed_methods), _autoindex(other._autoindex), _upload(other._upload), _upload_dir(other._upload_dir), _root(other._root), _index(other._index)
+	: _path(other._path), _allowed_methods(other._allowed_methods), _autoindex(other._autoindex), _upload(other._upload), _client_body_buffer_size(other._client_body_buffer_size), _cgi_ext(other._cgi_ext), _upload_dir(other._upload_dir), _root(other._root), _index(other._index)
 {
 }
 

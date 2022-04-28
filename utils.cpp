@@ -138,6 +138,8 @@ std::string to_string(Directive directive)
 		return "client_body_buffer_size";
 	case cgi_ext:
 		return "cgi_ext";
+	case error_page:
+		return "error_page";
 	default:
 		return "invalid";
 	}
@@ -169,6 +171,8 @@ Directive directive_from_string(const std::string& directive)
 		return client_body_buffer_size;
 	else if (directive == to_string(cgi_ext))
 		return cgi_ext;
+	else if (directive == to_string(error_page))
+		return error_page;
 	else
 		return INVALID_DIRECTIVE;
 }

@@ -49,6 +49,7 @@ ServerConfig Config::getServerConfig(const std::string& port, const std::string&
 			if (it->getServerName() == server_name)
 				return *it;
 	}
+	std::cout << applicable.front().getHost() << std::endl;
 	return applicable.front();
 }
 

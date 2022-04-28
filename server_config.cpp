@@ -12,17 +12,20 @@ ServerConfig::ServerConfig(const std::string& content)
 		std::stringstream lineStream(buffer);
 		std::string directive;
 		lineStream >> directive;
-		std::string rest;
-		std::string path;
-		std::string host_str;
 		switch(directive_from_string(directive))
 		{
 		case location:
-			rest = contentStream.str().substr(contentStream.tellg());
-			rest.erase(rest.find_first_of('}'));
-			contentStream.seekg(rest.size(), std::ios_base::cur);
-			lineStream >> path;
-			this->_locations.insert(std::make_pair(path, LocationConfig(path, rest)));
+			{
+				std::string path;
+				std::string rest = contentStream.str().substr(contentStream.tellg());
+				rest.erase(rest.find_first_of('}'));
+				contentStream.seekg(rest.size(), std::ios_base::cur);
+				lineStream >> path;
+				std::pair<std::map<std::string, LocationConfig>::iterator, bool> pair;
+				pair = this->_locations.insert(std::make_pair(path, LocationConfig(path, rest)));
+				if (!pair.second)
+					throw DuplicateLocationException(path);
+			}
 			break;
 		case root:
 			lineStream >> this->_root;
@@ -46,6 +49,15 @@ ServerConfig::ServerConfig(const std::string& content)
 			break;
 		case client_body_buffer_size:
 			lineStream >> this->_client_body_buffer_size;
+			break;
+		case error_page:
+			{
+				size_t error_code;
+				std::string error_path;
+				lineStream >> error_code;
+				lineStream >> error_path;
+				_error_pages.insert(std::make_pair(error_code, error_path));
+			}
 			break;
 		default:
 			break;
@@ -72,7 +84,7 @@ ServerConfig& ServerConfig::operator=(const ServerConfig& rhs)
 ServerConfig::ServerConfig(const ServerConfig& other)
 	: _root(other._root), _index(other._index), _server_name(other._server_name),
 		_host(other._host), _port(other._port), _client_body_buffer_size(other._client_body_buffer_size),
-		_allowed_methods(other._allowed_methods), _locations(other._locations)
+		_error_pages(other._error_pages), _allowed_methods(other._allowed_methods), _locations(other._locations)
 {
 }
 
@@ -85,11 +97,20 @@ const std::map<std::string, LocationConfig>& ServerConfig::getLocationMap() cons
 const std::set<Method>& ServerConfig::getAllowedMethods() const { return _allowed_methods; }
 size_t ServerConfig::getClientBodyBufferSize() const	{ return this->_client_body_buffer_size; }
 
-const LocationConfig& ServerConfig::getLocation(const std::string& path) const
+LocationConfig ServerConfig::getLocation(const std::string& path) const
 {
 	std::map<std::string, LocationConfig>::const_iterator it = this->_locations.find(path);
 	if (it != this->_locations.end())
 		return it->second;
 	else
 		throw NotFoundLocation();
+}
+
+std::string ServerConfig::getErrorPage(size_t error_code) const
+{
+	std::map<size_t, std::string>::const_iterator it = _error_pages.find(error_code);
+	if (it == _error_pages.end())
+		return "server/error_pages/" + std::to_string(error_code) + ".html";
+	else
+		return it->second;
 }

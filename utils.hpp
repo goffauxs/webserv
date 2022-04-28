@@ -41,6 +41,7 @@ enum Directive
 	server,
 	client_body_buffer_size,
 	cgi_ext,
+	error_page,
 	INVALID_DIRECTIVE
 };
 
