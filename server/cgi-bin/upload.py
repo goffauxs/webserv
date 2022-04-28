@@ -1,4 +1,4 @@
-import sys
+# import sys
 
 # data = sys.stdin.readlines()
 # print ("Content-type:text/html\n")
@@ -7,8 +7,7 @@ import sys
 # print (data)
 # print ("</body>")
 # print ("</html>")
-for line in sys.stdin:
-    if 'Exit' == line.rstrip():
-        break
-    print(f'Processing Message from sys.stdin *****{line}*****')
-print("Done")
+import fileinput
+
+for line in fileinput.input():
+    print(line)
