@@ -10,20 +10,23 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], Request const &req, ch
 {
 	char	*av[3];
 
-	av[0] = (char *)"python2.7";
-	av[1] = (char *)"server/cgi-bin/test.py";/*path.c_str();*/
+	av[0] = (char *)"python3.10";
+	av[1] = (char *)"server/cgi-bin/upload.py";/*path.c_str();*/
 	av[2] = NULL;
 	dup2(fd_i[0], 0);
 	dup2(fd[1], 1);
-	dup2(fd[0], 0);
+	//dup2(fd[0], 0);
 	if (req.get_content())
+	{
 		write(1, req.get_content(), req.get_contentLength());
+		char c = 0x04;
+		write(1, &c, 1);
+	}
 	close(fd_i[0]);
 	close(fd_i[1]);
-	close(fd[0]);
 	close(fd[1]);
-
-	execve("/usr/bin/python2.7", av, env);
+	//close(fd[0]);
+	execve("/usr/bin/python3.10", av, env);
 	perror("The error is :");
 	exit(1);
 }
