@@ -11,13 +11,13 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], Request const &req, ch
 	char	*av[3];
 
 	av[0] = (char *)"python";
-	av[1] = (char *)"server/cgi-bin/test.py";/*path.c_str();*/
+	av[1] = (char *)"server/cgi-bin/upload.py";/*path.c_str();*/
 	av[2] = NULL;
 	dup2(fd_i[0], 0);
 	dup2(fd[1], 1);
 	dup2(fd[0], 0);
 	if (req.get_content())
-		write(1, req.get_content(), req.get_contentLength());
+		write(fd_i[0], req.get_content(), req.get_contentLength());
 	close(fd_i[0]);
 	close(fd_i[1]);
 	close(fd[0]);

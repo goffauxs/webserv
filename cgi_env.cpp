@@ -53,6 +53,7 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 			break;
 		default:
 			break;
+	}
 	
 	//PATH_INFO in the first line, after the GET/POST, before the "?" or the second " "
 	//Obsolete
@@ -123,7 +124,6 @@ char	**vec_to_tab(std::vector<std::string> vec)
 {
 	char	**tab;
 
-	std::cerr << "test" << std::endl;
 	//tab = (char **)malloc(sizeof(char *) * vec.size() + 1);
 	tab = new char*[vec.size() + 1];
 	for (size_t i = 0; i < vec.size(); i++)
