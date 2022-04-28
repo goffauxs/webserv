@@ -32,6 +32,7 @@ public:
 		}
 
 		//get content-length
+		this->_contentLength = 0;
 		std::vector<Header> headers = this->_headers;
 		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
 			if (it->get_key() == "Content-Length")
