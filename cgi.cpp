@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-void		fork_exec(std::string path, int fd[2], int fd_i[2], char *body, char **env)
+void		fork_exec(std::string path, int fd[2], int fd_i[2], Request const &req, char **env)
 {
 	char	*av[3];
 
@@ -16,7 +16,8 @@ void		fork_exec(std::string path, int fd[2], int fd_i[2], char *body, char **env
 	dup2(fd_i[0], 0);
 	dup2(fd[1], 1);
 	dup2(fd[0], 0);
-	// write(1, body, body.size() + 1);
+	if (req.get_content())
+		write(1, req.get_content(), req.get_contentLength());
 	close(fd_i[0]);
 	close(fd_i[1]);
 	close(fd[0]);
@@ -39,7 +40,7 @@ std::string exec_cgi(std::string path, Request const &req)
 	if (!fork())
 	{
 		char **env = vec_to_tab(create_env(req));
-		fork_exec(path, fd, fd_i, req.get_content(), env);		
+		fork_exec(path, fd, fd_i, req, env);
 	}
 	close(fd[1]);
 	close(fd_i[0]);

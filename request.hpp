@@ -50,7 +50,7 @@ public:
 				i = request.find("\r\n\r\n");
 				i += 4;
 				j = 0;
-				this->_content = new char[this->_contentLength];
+				this->_content = new char[this->_contentLength + 1];
 				while (j < this->_contentLength)
 					this->_content[j++] = buff[i++];
 				this->_content[j] = '\0';
