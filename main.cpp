@@ -13,9 +13,7 @@
 #include "webserv.hpp"
 #include <string.h>
 
-#ifndef PORT
 #define PORT 8000
-#endif
 #define	BUFFSIZE 300000
 
 void	check(int val, std::string msg)
@@ -42,7 +40,7 @@ int	setup_serv(int backlog)
 
 	//start listening
 	check(bind(socket_fd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)),
-		"Failed to bind to port " + std::to_string(PORT));
+		"Failed to bind to port " + to_string(PORT));
 	check(listen(socket_fd, backlog), "Failed to listen on socket");
 
 	return (socket_fd);

@@ -24,7 +24,7 @@ std::string	request_get(Request const &req)
 		std::cout << "res = " << res << std::endl;
 
 		size_t	len = res.substr(res.find("\n\n") + 2).length();
-		return ("HTTP/1.1 200 OK\nContent-Length: " + std::to_string(len) + "\n" + res);
+		return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(len) + "\n" + res);
 	}
 	else
 		action = req.get_resource();
@@ -46,7 +46,7 @@ std::string	request_get(Request const &req)
 		size_t	start = 0;
 		size_t	end = std::min(accept.find(",", start), accept.find("\n", start));
 		return ("HTTP/1.1 200 OK\nContent-Type: " + accept.substr(start, end - start)
-		+ "\nContent-Length: " + std::to_string(body.length()) + "\n\n" + body);
+		+ "\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 	}
 	else
 	{
@@ -55,7 +55,7 @@ std::string	request_get(Request const &req)
 		stream << errFile.rdbuf();
 		std::string	body = stream.str();
 
-		return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + std::to_string(body.length()) + "\n\n" + body);
+		return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 	}
 }
 
@@ -74,7 +74,7 @@ std::string	request_delete(Request const &req)
 		stream << errFile.rdbuf();
 		std::string	body = stream.str();
 
-		return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + std::to_string(body.length()) + "\n\n" + body);
+		return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 	}
 }
 

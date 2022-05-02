@@ -30,6 +30,8 @@ std::vector<std::string> split(const std::string& str, const std::string& delim 
 std::string to_string(Method method);
 Method method_from_string(const std::string& method);
 std::string to_string(Version version);
+std::string	to_string(size_t nb);
+std::string	to_string(int nb);
 Version version_from_string(const std::string& version);
 bool is_not_space(char c);
 void ltrim(std::string& str);
