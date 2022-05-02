@@ -1,4 +1,5 @@
 #include "server_config.hpp"
+#include "location_config.hpp"
 
 ServerConfig::ServerConfig(const std::string& content)
 {
@@ -21,8 +22,8 @@ ServerConfig::ServerConfig(const std::string& content)
 				rest.erase(rest.find_first_of('}'));
 				contentStream.seekg(rest.size(), std::ios_base::cur);
 				lineStream >> path;
-				std::pair<std::map<std::string, LocationConfig>::iterator, bool> pair;
-				pair = this->_locations.insert(std::make_pair(path, LocationConfig(path, rest)));
+				std::pair<std::map<std::string, LocationConfig*>::iterator, bool> pair;
+				pair = this->_locations.insert(std::make_pair(path, new LocationConfig(path, rest)));
 				if (!pair.second)
 					throw DuplicateLocationException(path);
 			}
@@ -88,18 +89,25 @@ ServerConfig::ServerConfig(const ServerConfig& other)
 {
 }
 
-const std::string& ServerConfig::getHost() const { return _host; }
-const std::string& ServerConfig::getPort() const { return _port; }
-const std::string& ServerConfig::getRoot() const { return _root; }
-const std::string& ServerConfig::getIndex() const { return _index; }
-const std::string& ServerConfig::getServerName() const { return _server_name; }
-const std::map<std::string, LocationConfig>& ServerConfig::getLocationMap() const { return _locations; }
-const std::set<Method>& ServerConfig::getAllowedMethods() const { return _allowed_methods; }
+ServerConfig::~ServerConfig()
+{
+	for (std::map<std::string, LocationConfig*>::iterator it = _locations.begin(); it != _locations.end(); it++)
+		delete it->second;
+	_locations.clear();
+}
+
+const std::string& ServerConfig::getHost() const { return this->_host; }
+const std::string& ServerConfig::getPort() const { return this->_port; }
+const std::string& ServerConfig::getRoot() const { return this->_root; }
+const std::string& ServerConfig::getIndex() const { return this->_index; }
+const std::string& ServerConfig::getServerName() const { return this->_server_name; }
+const std::map<std::string, LocationConfig*>& ServerConfig::getLocationMap() const { return this->_locations; }
+const std::set<Method>& ServerConfig::getAllowedMethods() const { return this->_allowed_methods; }
 size_t ServerConfig::getClientBodyBufferSize() const	{ return this->_client_body_buffer_size; }
 
-LocationConfig ServerConfig::getLocation(const std::string& path) const
+LocationConfig* ServerConfig::getLocation(const std::string& path) const
 {
-	std::map<std::string, LocationConfig>::const_iterator it = this->_locations.find(path);
+	std::map<std::string, LocationConfig*>::const_iterator it = this->_locations.find(path);
 	if (it != this->_locations.end())
 		return it->second;
 	else

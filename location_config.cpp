@@ -51,16 +51,12 @@ LocationConfig::LocationConfig(const std::string& path, const std::string& conte
 }
 
 LocationConfig::LocationConfig(const LocationConfig& other)
-	: _path(other._path), _allowed_methods(other._allowed_methods), _autoindex(other._autoindex), _upload(other._upload), _client_body_buffer_size(other._client_body_buffer_size), _cgi_ext(other._cgi_ext), _upload_dir(other._upload_dir), _root(other._root), _index(other._index)
+	: ServerConfig(other), _path(other._path), _autoindex(other._autoindex), _upload(other._upload), _cgi_ext(other._cgi_ext), _upload_dir(other._upload_dir)
 {
 }
 
 const std::string& 		LocationConfig::getPath() const					{ return this->_path; }
-const std::set<Method>&	LocationConfig::getAllowedMethods() const		{ return this->_allowed_methods; }
 bool 					LocationConfig::isAutoIndexed() const			{ return this->_autoindex; }
 bool 					LocationConfig::isUploadable() const			{ return this->_upload; }
 const std::string&		LocationConfig::getUploadDir() const			{ return this->_upload_dir; }
-const std::string& 		LocationConfig::getRoot() const					{ return this->_root; }
-const std::string& 		LocationConfig::getIndex() const				{ return this->_index; }
 const std::string&		LocationConfig::getCgiExtenstion() const 		{ return this->_cgi_ext; }
-size_t					LocationConfig::getClientBodyBufferSize() const	{ return this->_client_body_buffer_size; }

@@ -12,10 +12,11 @@ class Config
 {
 public:
 	Config(const std::string& path);
+	~Config();
 	// Config(const Config& other);
 	Config& operator=(const Config& other);
 
-	ServerConfig getServerConfig(const std::string& port, const std::string& server_name) const;
+	ServerConfig* getServerConfig(const std::string& port, const std::string& server_name) const;
 	class BracketException : public std::exception
 	{
 	private:
@@ -43,7 +44,7 @@ private:
 	void advance_to_next_bracket(std::ifstream& stream);
 	int has_uneven_brackets(std::ifstream& stream);
 
-	std::list<ServerConfig> _list;
+	std::list<ServerConfig*> _list;
 };
 
 #endif /* CONFIG_HPP */
