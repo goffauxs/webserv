@@ -1,7 +1,9 @@
 import sys
 
-for line in sys.stdin:
-    if 'Exit' == line.rstrip():
-        break
-    print(f'Processing Message from sys.stdin *****{line}*****')
-print("Done")
+print ("Content-type:text/html\n")
+print ("<html>")
+print ("<head>")
+data = sys.stdin.readlines()
+print (data)
+print ("</body>")
+print ("</html>")

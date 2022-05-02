@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include "request.hpp"
+#include <sys/types.h>
+#include <dirent.h>
 
 //just a c style .h file for prototypes
 

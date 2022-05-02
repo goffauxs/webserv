@@ -97,6 +97,22 @@ Version version_from_string(const std::string& version)
 		return HTTP_1_1;
 }
 
+std::string	to_string(size_t nb)
+{
+	std::ostringstream convert;
+
+	convert << nb;
+	return (convert.str());
+}
+
+std::string	to_string(int nb)
+{
+	std::ostringstream convert;
+
+	convert << nb;
+	return (convert.str());
+}
+
 bool is_not_space(char c) { return !std::isspace(c); }
 void ltrim(std::string& str) { str.erase(str.begin(), std::find_if(str.begin(), str.end(), is_not_space)); }
 void rtrim(std::string& str) { str.erase(std::find_if(str.rbegin(), str.rend(), is_not_space).base(), str.end()); }

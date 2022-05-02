@@ -10,6 +10,7 @@ void		fork_exec(std::string path, int fd_o[2], int fd_i[2], Request const &req, 
 {
 	char	*av[3];
 
+	(void)path;
 	av[0] = (char *)"python3.10";
 	av[1] = (char *)"server/cgi-bin/upload.py";/*path.c_str();*/
 	av[2] = NULL;
@@ -26,7 +27,7 @@ void		fork_exec(std::string path, int fd_o[2], int fd_i[2], Request const &req, 
 	close(fd_o[1]);
 	close(fd_o[0]);
 	execve("/usr/bin/python3.10", av, env);
-	perror("The error is :");
+	//perror("The error is :");
 	exit(1);
 }
 
