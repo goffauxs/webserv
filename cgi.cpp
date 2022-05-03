@@ -11,7 +11,7 @@ void		fork_exec(std::string path, int in[2],int out[2], Request const &req, char
 	char	*av[3];
 
 	av[0] = (char *)"python";
-	av[1] = (char *)"server/cgi-bin/upload.py";/*path.c_str();*/
+	av[1] = (char *)/*"server/cgi-bin/upload.py";*/path.c_str();
 	av[2] = NULL;
 	dup2(in[0], 0);
 	dup2(out[1], 1);

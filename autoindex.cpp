@@ -1,10 +1,12 @@
 #include "webserv.hpp"
+#include <set>
 
 std::string autoindex_gen(std::string path)
 {
 	DIR             *direc;
 	struct dirent   *current;
-	std::string		return_string("<!DOCTYPE html>\n<html>\n<body>\n\n<p>");
+	std::set<std::string>		files;		
+	std::string		return_string("<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset=\"utf-8\"/>\n\t<title>autoindex</title>\n</head>\n<body>\n\n<p>");
 
 	direc = opendir(path.c_str());
 	if (!direc)
@@ -12,15 +14,18 @@ std::string autoindex_gen(std::string path)
 	current = readdir(direc);
 	while(current)
 	{
-		//std::cout << current->d_name << std::endl;
-		return_string.append("\n\t<a href=\"" + path + "/" + current->d_name + "\">" + current->d_name + "<br>");
+		files.insert(current->d_name);
 		current = readdir(direc);
+	}
+	for (std::set<std::string>::iterator it = files.begin(); it != files.end(); it++)
+	{
+		return_string.append("\n\t<a href=\"" + path + "/" + *it + "\">" + *it + "<br>");
 	}
 	return_string.append("\n</p>\n\n</body>\n</html>");
 	return (return_string);
 }
 
-int main()
+/*int main()
 {
 	std::cout << autoindex_gen(".") << std::endl;
-}
+}*/

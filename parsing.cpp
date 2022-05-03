@@ -80,7 +80,7 @@ std::string	request_delete(Request const &req)
 
 std::string	request_post(Request const &req)
 {
-	std::string res = exec_cgi("server/cgi-bin/test.py", req);
+	std::string res = exec_cgi("server/cgi-bin/upload.py", req);
 	// std::cout << "res = " << res << std::endl;
 
 	// size_t	len = res.substr(res.find("\n\n") + 2).length();
