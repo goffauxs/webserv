@@ -12,7 +12,7 @@ void		fork_exec(std::string path, int fd_o[2], int fd_i[2], Request const &req, 
 
 	(void)path;
 	av[0] = (char *)"python3.10";
-	av[1] = (char *)"server/cgi-bin/upload.py";/*path.c_str();*/
+	av[1] = (char *)"server/cgi-bin/test.py";/*path.c_str();*/
 	av[2] = NULL;
 	dup2(fd_i[0], 0);
 	dup2(fd_o[1], 1);

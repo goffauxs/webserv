@@ -17,6 +17,7 @@ std::string	request_get(Request const &req)
 	std::string	path = "server";
 	std::string	action;
 
+	if (1/*autoindex is on*/)
 	{
 		std::string	res;
 		res = autoindex_gen(path + req.get_resource(), req.get_resource());
