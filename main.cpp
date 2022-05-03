@@ -11,6 +11,7 @@
 #include "request.hpp"
 #include "utils.hpp"
 #include "webserv.hpp"
+#include <fcntl.h>
 #include <string.h>
 
 #define PORT 8000
@@ -31,12 +32,19 @@ int	setup_serv(int backlog)
 
 	//create socket with IPV4, TCP
 	check((socket_fd = socket(AF_INET, SOCK_STREAM, 0)), "Failed to create socket");
+	fcntl(socket_fd, F_SETFL, O_NONBLOCK);
 
 	//initalize the address struct
 	sockaddr_in sockaddr; //https://www.gta.ufrj.br/ensino/eel878/sockets/sockaddr_inman.html
 	sockaddr.sin_family = AF_INET;
 	sockaddr.sin_addr.s_addr = INADDR_ANY; //inaddr_any because any address
 	sockaddr.sin_port = htons(PORT);
+
+	int optval=1;
+	if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1) {
+		perror("setsockopt");
+		exit(1);
+	}
 
 	//start listening
 	check(bind(socket_fd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)),
@@ -54,6 +62,7 @@ int	accept_connection(int socket_fd)
 
 	check(client_fd = accept(socket_fd, (struct sockaddr*)&client_addr, (socklen_t*)&addrlen),
 		"Failed to grab connection");
+	fcntl(client_fd, F_SETFL, O_NONBLOCK);
 	// std::cout << "address = " << inet_ntoa(client_addr.sin_addr) << std::endl;
 
 	return (client_fd);
