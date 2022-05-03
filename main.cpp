@@ -25,6 +25,8 @@ int main()
 			std::cout << "index: " << loc->getIndex() << std::endl;
 			std::cout << "uploadable?: " << std::boolalpha << loc->isUploadable() << std::endl;
 			std::cout << "upload_dir: " << loc->getUploadDir() << std::endl;
+			std::cout << "error 404: " << loc->getErrorPage(404) << std::endl;
+			std::cout << "error 500: " << loc->getErrorPage(500) << std::endl;
 		}
 		catch (const std::exception& e)
 		{

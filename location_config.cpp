@@ -1,8 +1,16 @@
 #include "location_config.hpp"
 
-LocationConfig::LocationConfig(const std::string& path, const std::string& content)
+LocationConfig::LocationConfig(const ServerConfig& other, const std::string& path, const std::string& content)
 	: _path(path), _autoindex(false), _upload(false)
 {
+	this->_root = other.getRoot();
+	this->_index = other.getIndex();
+	this->_server_name = other.getServerName();
+	this->_host = other.getHost();
+	this->_port = other.getPort();
+	this->_client_body_buffer_size = other.getClientBodyBufferSize();
+	this->_error_pages = other.getErrorPages();
+	this->_allowed_methods = other.getAllowedMethods();
 	std::stringstream contentStream(content);
 	
 	std::string buffer;

@@ -8,7 +8,8 @@
 class LocationConfig : public ServerConfig
 {
 public:
-	LocationConfig(const std::string& path, const std::string& content);
+	LocationConfig(const ServerConfig& other, const std::string& path, const std::string& content);
+	~LocationConfig() {}
 	LocationConfig(const LocationConfig& other);
 
 	const std::string&		getPath() const;

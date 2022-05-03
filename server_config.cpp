@@ -1,5 +1,6 @@
 #include "server_config.hpp"
 #include "location_config.hpp"
+#include <iostream>
 
 ServerConfig::ServerConfig(const std::string& content)
 {
@@ -13,6 +14,8 @@ ServerConfig::ServerConfig(const std::string& content)
 		std::stringstream lineStream(buffer);
 		std::string directive;
 		lineStream >> directive;
+		if (directive == "" || directive == "{" || directive == "}" || directive[0] == '#')
+			continue;
 		switch(directive_from_string(directive))
 		{
 		case location:
@@ -23,7 +26,7 @@ ServerConfig::ServerConfig(const std::string& content)
 				contentStream.seekg(rest.size(), std::ios_base::cur);
 				lineStream >> path;
 				std::pair<std::map<std::string, LocationConfig*>::iterator, bool> pair;
-				pair = this->_locations.insert(std::make_pair(path, new LocationConfig(path, rest)));
+				pair = this->_locations.insert(std::make_pair(path, new LocationConfig(*this, path, rest)));
 				if (!pair.second)
 					throw DuplicateLocationException(path);
 			}
@@ -60,6 +63,8 @@ ServerConfig::ServerConfig(const std::string& content)
 				_error_pages.insert(std::make_pair(error_code, error_path));
 			}
 			break;
+		case INVALID_DIRECTIVE:
+			throw InvalidDirective(directive);
 		default:
 			break;
 		}
@@ -109,16 +114,18 @@ LocationConfig* ServerConfig::getLocation(const std::string& path) const
 {
 	std::map<std::string, LocationConfig*>::const_iterator it = this->_locations.find(path);
 	if (it != this->_locations.end())
-		return it->second;
+		return new LocationConfig(*it->second);
 	else
 		throw NotFoundLocation();
 }
+
+std::map<size_t, std::string> ServerConfig::getErrorPages() const { return _error_pages; }
 
 std::string ServerConfig::getErrorPage(size_t error_code) const
 {
 	std::map<size_t, std::string>::const_iterator it = _error_pages.find(error_code);
 	if (it == _error_pages.end())
-		return "server/error_pages/" + std::to_string(error_code) + ".html";
+		return "/server/error_pages/" + std::to_string(error_code) + ".html";
 	else
 		return it->second;
 }

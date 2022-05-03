@@ -24,6 +24,7 @@ public:
 	const std::string&								getPort() const;
 	size_t											getClientBodyBufferSize() const;
 	std::string										getErrorPage(size_t error_code) const;
+	std::map<size_t, std::string>					getErrorPages() const;
 	LocationConfig*									getLocation(const std::string& path) const;
 	const std::map<std::string, LocationConfig*>&	getLocationMap() const;
 	const std::set<Method>&							getAllowedMethods() const;
@@ -42,6 +43,15 @@ public:
 	public:
 		DuplicateLocationException(const std::string& path) : _str("Error: Duplicate location \"" + path + "\"") {}
 		virtual ~DuplicateLocationException() throw() { return; }
+		const char* what() const throw() { return _str.c_str(); }
+	};
+	class InvalidDirective : public std::exception
+	{
+	private:
+		std::string _str;
+	public:
+		InvalidDirective(const std::string& directive) : _str("Error: Unknown directive \"" + directive + "\"") {}
+		virtual ~InvalidDirective() throw() { return; }
 		const char* what() const throw() { return _str.c_str(); }
 	};
 protected:

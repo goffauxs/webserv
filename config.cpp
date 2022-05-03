@@ -54,9 +54,9 @@ ServerConfig* Config::getServerConfig(const std::string& port, const std::string
 	{
 		for (std::list<ServerConfig*>::const_iterator it = applicable.begin(); it != applicable.end(); it++)
 			if ((*it)->getServerName() == server_name)
-				return *it;
+				return new ServerConfig(**it);
 	}
-	return applicable.front();
+	return new ServerConfig(*applicable.front());
 }
 
 int Config::has_uneven_brackets(std::ifstream& stream)
