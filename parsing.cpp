@@ -17,6 +17,12 @@ std::string	request_get(Request const &req)
 	std::string	path = "server";
 	std::string	action;
 
+	{
+		std::string	res;
+		res = autoindex_gen(path + req.get_resource(), req.get_resource());
+		if (res != "")
+			return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(res.length()) + "\nContent-type:text/html\n" + res);
+	}
 	if (req.get_resource().find("?") != (size_t)-1)
 	{
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
