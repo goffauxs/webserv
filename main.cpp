@@ -111,11 +111,44 @@ void	write_connection(int client_fd, const std::string& response)
 	}
 }
 
+void	handle_connection(int client_fd)
+{
+	char *buff = new char[BUFFSIZE];
+	std::string	response;
+
+	memset(buff, '\0', BUFFSIZE);
+
+	int	bytes_read = recv(client_fd, buff, BUFFSIZE, 0);
+	check(bytes_read, "read error");
+	std::cout << buff << std::endl;
+
+	Request req(buff);
+
+	response = parse(req);
+
+	int len = response.size();
+	int sent = 0;
+	while (len > 0)
+	{
+		int bytes_sent = send(client_fd, response.c_str() + sent, len, 0);
+
+		if (bytes_sent == 0)
+			break;
+		if (bytes_sent > 0)
+		{
+			len -= bytes_sent;
+			sent += bytes_sent;
+		}
+	}
+
+	close(client_fd);
+}
+
 void	run_serv(std::set<int> sockets)
 {
 	fd_set	master, read_fds, write_fds;
 	int		client_fd;
-	std::map<int, std::string> responses;
+	// std::map<int, std::string> responses;
 
 	FD_ZERO(&master); //zero out master
 	// FD_ZERO(&writing_master);
@@ -151,22 +184,24 @@ void	run_serv(std::set<int> sockets)
 				}
 				else
 				{
-					if (responses.count(i))
-						responses[i] = read_connection(i);
-					else
-						responses.insert(std::make_pair(i, read_connection(i)));
-				}
-			}
-			if (FD_ISSET(i, &write_fds))
-			{
-				std::map<int, std::string>::iterator found = responses.find(i);
-				if (found != responses.end())
-				{
-					write_connection(i, found->second);
-					close(i);
+					// if (responses.count(i))
+					// 	responses[i] = read_connection(i);
+					// else
+					// 	responses.insert(std::make_pair(i, read_connection(i)));
+					handle_connection(i);
 					FD_CLR(i, &master);
 				}
 			}
+			// if (FD_ISSET(i, &write_fds))
+			// {
+			// 	std::map<int, std::string>::iterator found = responses.find(i);
+			// 	if (found != responses.end())
+			// 	{
+			// 		write_connection(i, found->second);
+			// 		close(i);
+			// 		FD_CLR(i, &master);
+			// 	}
+			// }
 		}
 	}
 }
