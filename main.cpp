@@ -98,7 +98,22 @@ void	handle_connection(int client_fd)
 	response = parse(req);
 
 	//Send a message to the connection
-	send(client_fd, response.c_str(), response.size(), 0);
+	int len = response.size();
+	int sent = 0;
+	while (len > 0)
+	{
+		int bytes_sent = send(client_fd, response.c_str() + sent, len, 0);
+
+		if (bytes_sent == 0)
+			break;
+		if (bytes_sent > 0)
+		{
+			len -= bytes_sent;
+			sent += bytes_sent;
+		}
+	}
+
+	// int bytes_sent = send(client_fd, response.c_str(), response.size(), 0);
 
 	close(client_fd);
 }
