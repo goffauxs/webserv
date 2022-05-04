@@ -16,11 +16,11 @@ int main()
 	{
 		Config config("default.conf");
 		std::cout << "port: " << config.getServerList().front()->getPort() << std::endl;
-		ServerConfig* conf = config.getServerConfig("8000", "youpi");
-		std::cout << "server root: " << conf->getRoot() << std::endl;
+		ServerConfig* server = config.getServerConfig("8000", "youpi");
+		std::cout << "server root: " << server->getRoot() << std::endl;
 		try
 		{
-			LocationConfig* loc = conf->getLocation("/directory/upload.bla");
+			LocationConfig* loc = server->getLocation("/directory/upload.bla");
 			std::cout << "cgi_ext: " << loc->getCgiExtenstion() << std::endl;
 			std::cout << "root: " << loc->getRoot() << std::endl;
 			std::cout << "index: " << loc->getIndex() << std::endl;
@@ -28,6 +28,7 @@ int main()
 			std::cout << "upload_dir: " << loc->getUploadDir() << std::endl;
 			std::cout << "error 404: " << loc->getErrorPage(404) << std::endl;
 			std::cout << "error 500: " << loc->getErrorPage(500) << std::endl;
+			std::cout << "port of server: " << loc->getPort() << std::endl;
 		}
 		catch (const std::exception& e)
 		{
