@@ -59,6 +59,8 @@ ServerConfig* Config::getServerConfig(const std::string& port, const std::string
 	return new ServerConfig(*applicable.front());
 }
 
+std::list<ServerConfig*> Config::getServerList() const { return _list; }
+
 int Config::has_uneven_brackets(std::ifstream& stream)
 {
 	std::stack<int> brackets;

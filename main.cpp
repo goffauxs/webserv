@@ -15,6 +15,7 @@ int main()
 	try
 	{
 		Config config("default.conf");
+		std::cout << "port: " << config.getServerList().front()->getPort() << std::endl;
 		ServerConfig* conf = config.getServerConfig("8000", "youpi");
 		std::cout << "server root: " << conf->getRoot() << std::endl;
 		try

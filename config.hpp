@@ -17,6 +17,7 @@ public:
 	Config& operator=(const Config& other);
 
 	ServerConfig* getServerConfig(const std::string& port, const std::string& server_name) const;
+	std::list<ServerConfig*> getServerList() const;
 	class BracketException : public std::exception
 	{
 	private:
