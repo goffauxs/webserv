@@ -1,6 +1,6 @@
 NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror #-std=c++98
+FLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g
 
 CXX = @c++ $(FLAGS)
 

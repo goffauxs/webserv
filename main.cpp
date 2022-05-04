@@ -14,6 +14,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/time.h>
+#include <map>
+#include <set>
 
 #define PORT 8000
 #define	BUFFSIZE 300000
@@ -27,12 +29,11 @@ void	check(int val, std::string msg)
 	}
 }
 
-std::vector<int>	setup_serv(int backlog, int numb_servs, int ports[3])
+std::set<int>	setup_serv(int backlog, int numb_servs, int ports[3])
 {
 	// int 		sockets[numb_servs];
-	std::vector<int>	sockets;
-	for (int i = 0; i < numb_servs; i++)
-		sockets.push_back(ports[i]);
+	std::vector<int>	sockets(numb_servs);
+	std::set<int>		sock_set;
 	sockaddr_in	sockaddr[numb_servs]; //https://www.gta.ufrj.br/ensino/eel878/sockets/sockaddr_inman.html
 	int			optval = 1;
 
@@ -54,7 +55,10 @@ std::vector<int>	setup_serv(int backlog, int numb_servs, int ports[3])
 		check(listen(sockets[i], backlog), "Failed to listen on socket");
 	}
 
-	return (sockets);
+	for (std::vector<int>::iterator it = sockets.begin(); it != sockets.end(); it++)
+		sock_set.insert(*it);
+
+	return (sock_set);
 }
 
 int	accept_connection(int socket_fd)
@@ -71,7 +75,7 @@ int	accept_connection(int socket_fd)
 	return (client_fd);
 }
 
-void	handle_connection(int client_fd)
+std::string read_connection(int client_fd)
 {
 	char *buff = new char[BUFFSIZE];
 	std::string	response;
@@ -83,23 +87,13 @@ void	handle_connection(int client_fd)
 	std::cout << buff << std::endl;
 
 	Request req(buff);
-	std::vector<Header> headers = req.get_headers();
-	/* prints headers */
-	// switch (req.get_method())
-	// {
-	// 	case GET:
-	// 		std::cout << to_string(req.get_method()) << " - " << req.get_resource() << " - " << to_string(req.get_version()) << std::endl;
-	// 		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
-	// 			std::cout << "\t\"" << it->get_key() << "\": \"" << it->get_value() << "\"" << std::endl;
-	// 		std::cout << std::endl;
-	// 		break;
-	// 	default:
-	// 		break;
-	// }
-	// std::cout << "body = " << req.get_body() << std::endl;
 
 	response = parse(req);
+	return response;
+}
 
+void	write_connection(int client_fd, const std::string& response)
+{
 	//Send a message to the connection
 	int len = response.size();
 	int sent = 0;
@@ -115,55 +109,62 @@ void	handle_connection(int client_fd)
 			sent += bytes_sent;
 		}
 	}
-
-	// int bytes_sent = send(client_fd, response.c_str(), response.size(), 0);
-
-	close(client_fd);
 }
 
-void	run_serv(int numb_servs, std::vector<int> sockets)
+void	run_serv(std::set<int> sockets)
 {
-	fd_set	reading_master, reading_sockets,/* writing_master, writing_sockets*/;
+	fd_set	master, read_fds, write_fds;
 	int		client_fd;
+	std::map<int, std::string> responses;
 
-	FD_ZERO(&reading_master); //zero out reading_master
+	FD_ZERO(&master); //zero out master
 	// FD_ZERO(&writing_master);
-	for (int i = 0; i < numb_servs; i++)
-		FD_SET(sockets[i], &reading_master); //add socket_fd to current set
-	//reading_master = set of fds that we're watching
-	//reading_sockets = tmp that will contain all the set of fds that are ready after we give it to select
+	for (std::set<int>::iterator it = sockets.begin(); it != sockets.end(); it++)
+		FD_SET(*it, &master); //add socket_fd to current set
+	//master = set of fds that we're watching
+	//read_fds = tmp that will contain all the set of fds that are ready after we give it to select
 
-	int	max_socket = sockets[numb_servs - 1]; //used to reduce the amount of times we're gonna go through the for loop
+	int	fd_max = *sockets.rbegin(); //used to reduce the amount of times we're gonna go through the for loop
 
 	struct timeval	tv;
 	tv.tv_sec = 1;
 	tv.tv_usec = 0;
 	while (1)
 	{
-		reading_sockets = reading_master; //reading_sockets is a tmp because select is destructive
+		read_fds = master; //read_fds is a tmp because select is destructive
+		write_fds = master;
 
 		//select(range of fd to check, set of fds to check for read, for write, for errors, timeout value)
-		check(select(max_socket + 1, &reading_sockets, NULL, NULL, &tv), "Select error");
+		check(select(fd_max + 1, &read_fds, &write_fds, NULL, &tv), "Select error");
 
-		for (int i = 0; i <= max_socket; i++)
+		for (int i = 0; i <= fd_max; i++)
 		{
-			if (FD_ISSET(i, &reading_sockets)) //check if fd i is ready
+			if (FD_ISSET(i, &read_fds)) //check if fd i is ready
 			{
-				for (int j = 0; j < numb_servs; j++) //check on every port
+				if (sockets.count(i))
 				{
-					if (i == sockets[j]) //this is a new connection
-					{
-						client_fd = accept_connection(sockets[j]);
-						FD_SET(client_fd, &reading_master); //add new connection to set of fds we're watching
-						if (client_fd > max_socket)
-							max_socket = client_fd;
-						break ;
-					}
-					else if (j == numb_servs - 1) //enter this if we tried every port
-					{
-						handle_connection(i);
-						FD_CLR(i, &reading_master); //remove fd from set of fds we're watching
-					}
+					client_fd = accept_connection(i);
+					FD_SET(client_fd, &master); //add new connection to set of fds we're watching
+					if (client_fd > fd_max)
+						fd_max = client_fd;
+					break ;
+				}
+				else
+				{
+					if (responses.count(i))
+						responses[i] = read_connection(i);
+					else
+						responses.insert(std::make_pair(i, read_connection(i)));
+				}
+			}
+			if (FD_ISSET(i, &write_fds))
+			{
+				std::map<int, std::string>::iterator found = responses.find(i);
+				if (found != responses.end())
+				{
+					write_connection(i, found->second);
+					close(i);
+					FD_CLR(i, &master);
 				}
 			}
 		}
@@ -174,8 +175,8 @@ int	main()
 {
 	int					numb_servs = 3; //get from config
 	int					ports[3] = {7000, 8000, 9000}; //get from config
-	std::vector<int>	sockets = setup_serv(1000, numb_servs, ports);
-	run_serv(numb_servs, sockets);
+	std::set<int>		sockets = setup_serv(1000, numb_servs, ports);
+	run_serv(sockets);
 	// int	client_fd;
 
 	// fd_set	current_sockets, ready_sockets;
