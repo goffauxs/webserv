@@ -9,7 +9,11 @@ SRCS =	cgi.cpp\
 		find_header.cpp\
 		main.cpp\
 		parsing.cpp\
-		utils.cpp
+		utils.cpp\
+		config.cpp\
+		server_config.cpp\
+		location_config.cpp\
+		autoindex.cpp
 
 OBJ = $(SRCS:%.cpp=%.o)
 
