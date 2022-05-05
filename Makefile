@@ -1,6 +1,6 @@
 NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address -g
+FLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g
 
 CXX = @c++ $(FLAGS)
 
@@ -9,7 +9,11 @@ SRCS =	cgi.cpp\
 		find_header.cpp\
 		main.cpp\
 		parsing.cpp\
-		utils.cpp
+		utils.cpp\
+		autoindex.cpp\
+		config.cpp\
+		location_config.cpp\
+		server_config.cpp
 
 OBJ = $(SRCS:%.cpp=%.o)
 

@@ -21,6 +21,20 @@ std::vector<std::string> split(const std::string& str, const std::string& delim)
 	return tokens;
 }
 
+std::string concat(const std::vector<std::string>& strings, const std::string& delim)
+{
+	std::string res;
+
+	for (size_t i = 0; i < strings.size(); i++)
+	{
+		res += strings[i];
+
+		if ((i + 1) != strings.size())
+			res += delim;
+	}
+	return res;
+}
+
 std::string to_string(Method method)
 {
 	switch (method)
@@ -43,8 +57,9 @@ std::string to_string(Method method)
 		return "CONNECT";
 	case PATCH:
 		return "PATCH";
+	default:
+		return "INVALID";
 	}
-	return ("");
 }
 
 Method method_from_string(const std::string& method)
@@ -68,7 +83,7 @@ Method method_from_string(const std::string& method)
 	else if (method == to_string(PATCH))
 		return PATCH;
 	else
-		return GET;
+		return INVALID_METHOD;
 }
 
 std::string to_string(Version version)
@@ -111,6 +126,73 @@ std::string	to_string(int nb)
 
 	convert << nb;
 	return (convert.str());
+}
+
+std::string to_string(Directive directive)
+{
+	switch(directive)
+	{
+	case allowed_methods:
+		return "allowed_methods";
+	case autoindex:
+		return "autoindex";
+	case upload:
+		return "upload";
+	case upload_dir:
+		return "upload_dir";
+	case root:
+		return "root";
+	case default_index:
+		return "index";
+	case server_name:
+		return "server_name";
+	case directive_listen:
+		return "listen";
+	case location:
+		return "location";
+	case server:
+		return "server";
+	case client_body_buffer_size:
+		return "client_body_buffer_size";
+	case cgi_ext:
+		return "cgi_ext";
+	case error_page:
+		return "error_page";
+	default:
+		return "invalid";
+	}
+}
+
+Directive directive_from_string(const std::string& directive)
+{
+	if (directive == to_string(allowed_methods))
+		return allowed_methods;
+	else if (directive == to_string(autoindex))
+		return autoindex;
+	else if (directive == to_string(upload))
+		return upload;
+	else if (directive == to_string(upload_dir))
+		return upload_dir;
+	else if (directive == to_string(root))
+		return root;
+	else if (directive == to_string(default_index))
+		return default_index;
+	else if (directive == to_string(server_name))
+		return server_name;
+	else if (directive == to_string(directive_listen))
+		return directive_listen;
+	else if (directive == to_string(location))
+		return location;
+	else if (directive == to_string(server))
+		return server;
+	else if (directive == to_string(client_body_buffer_size))
+		return client_body_buffer_size;
+	else if (directive == to_string(cgi_ext))
+		return cgi_ext;
+	else if (directive == to_string(error_page))
+		return error_page;
+	else
+		return INVALID_DIRECTIVE;
 }
 
 bool is_not_space(char c) { return !std::isspace(c); }

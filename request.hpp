@@ -83,7 +83,7 @@ public:
 private:
 	Request() {}
 	Request(const Request&) {}
-	Request& operator==(const Request&) { return *this; }
+	Request& operator=(const Request&) { return *this; }
 
 	Version _version;
 	Method _method;
