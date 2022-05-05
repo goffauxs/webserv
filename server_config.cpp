@@ -1,6 +1,7 @@
 #include "server_config.hpp"
 #include "location_config.hpp"
 #include <iostream>
+#include <limits>
 
 ServerConfig::ServerConfig(const std::string& content)
 	: _port(80)

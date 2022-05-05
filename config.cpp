@@ -18,8 +18,8 @@ Config::Config(const std::string& path)
 			return ;
 		ifs.seekg(0, ifs.beg);
 		char* server_str;
-		std::ifstream::streampos begin = ifs.tellg();
-		std::ifstream::streampos end;
+		std::ifstream::pos_type begin = ifs.tellg();
+		std::ifstream::pos_type end;
 		std::streamsize diff;
 		while (!ifs.eof())
 		{

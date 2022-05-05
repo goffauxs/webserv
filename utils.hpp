@@ -60,5 +60,4 @@ void rtrim(std::string& str);
 void trim(std::string& str);
 //std::vector<Header>::iterator find_header(std::vector<Header> vec, std::string key);
 
-
 #endif /* UTILS_HPP */

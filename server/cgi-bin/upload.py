@@ -2,7 +2,11 @@ import sys
 
 data = sys.stdin.read()
 
-file = open("upload", "a")
+start = data.find("filename=")
+end = data.find("\"", start + 1)
+string = "server/uploads/" + data[start:end]
+
+file = open(string, "a")
 file.seek(0, 0)
 file.truncate()
 file.write(data)
@@ -12,10 +16,3 @@ print("<head>")
 print("File successfully uploaded")
 print("</head>")
 print("</html>")
-
-# print("<html>")
-# print("<head>")
-# for arg in data:
-# 	print(arg + "</br>")
-# print("</body>")
-# print("</html>")
