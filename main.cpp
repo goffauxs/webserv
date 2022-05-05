@@ -75,45 +75,9 @@ int	accept_connection(int socket_fd)
 	return (client_fd);
 }
 
-std::string read_connection(int client_fd)
-{
-	char *buff = new char[BUFFSIZE];
-	std::string	response;
-
-	memset(buff, '\0', BUFFSIZE);
-
-	int	bytes_read = recv(client_fd, buff, BUFFSIZE, 0);
-	check(bytes_read, "read error");
-	std::cout << buff << std::endl;
-
-	Request req(buff);
-
-	response = parse(req);
-	return response;
-}
-
-void	write_connection(int client_fd, const std::string& response)
-{
-	//Send a message to the connection
-	int len = response.size();
-	int sent = 0;
-	while (len > 0)
-	{
-		int bytes_sent = send(client_fd, response.c_str() + sent, len, 0);
-
-		if (bytes_sent == 0)
-			break;
-		if (bytes_sent > 0)
-		{
-			len -= bytes_sent;
-			sent += bytes_sent;
-		}
-	}
-}
-
 void	handle_connection(int client_fd)
 {
-	char *buff = new char[BUFFSIZE];
+	char buff[BUFFSIZE] = {0};
 	std::string	response;
 
 	memset(buff, '\0', BUFFSIZE);
@@ -146,12 +110,10 @@ void	handle_connection(int client_fd)
 
 void	run_serv(std::set<int> sockets)
 {
-	fd_set	master, read_fds, write_fds;
+	fd_set	master, read_fds;
 	int		client_fd;
-	// std::map<int, std::string> responses;
 
 	FD_ZERO(&master); //zero out master
-	// FD_ZERO(&writing_master);
 	for (std::set<int>::iterator it = sockets.begin(); it != sockets.end(); it++)
 		FD_SET(*it, &master); //add socket_fd to current set
 	//master = set of fds that we're watching
@@ -165,10 +127,9 @@ void	run_serv(std::set<int> sockets)
 	while (1)
 	{
 		read_fds = master; //read_fds is a tmp because select is destructive
-		write_fds = master;
 
 		//select(range of fd to check, set of fds to check for read, for write, for errors, timeout value)
-		check(select(fd_max + 1, &read_fds, &write_fds, NULL, &tv), "Select error");
+		check(select(fd_max + 1, &read_fds, NULL, NULL, &tv), "Select error");
 
 		for (int i = 0; i <= fd_max; i++)
 		{
@@ -184,69 +145,18 @@ void	run_serv(std::set<int> sockets)
 				}
 				else
 				{
-					// if (responses.count(i))
-					// 	responses[i] = read_connection(i);
-					// else
-					// 	responses.insert(std::make_pair(i, read_connection(i)));
 					handle_connection(i);
 					FD_CLR(i, &master);
 				}
 			}
-			// if (FD_ISSET(i, &write_fds))
-			// {
-			// 	std::map<int, std::string>::iterator found = responses.find(i);
-			// 	if (found != responses.end())
-			// 	{
-			// 		write_connection(i, found->second);
-			// 		close(i);
-			// 		FD_CLR(i, &master);
-			// 	}
-			// }
 		}
 	}
 }
 
 int	main()
 {
-	int					numb_servs = 3; //get from config
-	int					ports[3] = {7000, 8000, 9000}; //get from config
+	const int			numb_servs = 3; //get from config
+	int					ports[numb_servs] = {7000, 8000, 9000}; //get from config
 	std::set<int>		sockets = setup_serv(1000, numb_servs, ports);
 	run_serv(sockets);
-	// int	client_fd;
-
-	// fd_set	current_sockets, ready_sockets;
-
-	// FD_ZERO(&current_sockets); //zero out current_sockets
-	// FD_SET(socket_fd, &current_sockets); //add socket_fd to current set
-	// //current_sockets = set of fds that we're watching
-	// //ready_sockets = tmp that will contain all the set of fds that are ready after we give it to select
-
-	// int	max_socket = socket_fd; //used to reduce the amount of times we're gonna go through the for loop
-	// while (1)
-	// {
-	// 	//ready_sockets is a tmp because select is destructive
-	// 	ready_sockets = current_sockets;
-
-	// 	//select(range of fd to check, set of fds to check for read, for write, for errors, timeout value)
-	// 	check(select(max_socket + 1, &ready_sockets, NULL, NULL, NULL), "Select error");
-
-	// 	for (int i = 0; i <= max_socket; i++)
-	// 	{
-	// 		if (FD_ISSET(i, &ready_sockets)) //check if fd i is ready
-	// 		{
-	// 			if (i == socket_fd) //this is a new connection
-	// 			{
-	// 				client_fd = accept_connection(socket_fd);
-	// 				FD_SET(client_fd, &current_sockets); //add new connection to set of fds we're watching
-	// 				if (client_fd > max_socket)
-	// 					max_socket = client_fd;
-	// 			}
-	// 			else
-	// 			{
-	// 				handle_connection(i);
-	// 				FD_CLR(i, &current_sockets); //remove fd from set of fds we're watching
-	// 			}
-	// 		}
-	// 	}
-	// }
 }
