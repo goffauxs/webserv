@@ -74,24 +74,23 @@ std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
 	{
 		//Think to change the path when we will set pwd at the directory
-		// char *pwd = get_current_dir_name();
-		
-		// switch (req.get_method())
-		// {
-		// 	case GET:
-		// 		vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/test.py");
-		// 		break;
-		// 	case POST:
-		// 		vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/upload.py");
-		// 		break;
-		// 	default:
-		// 		break;
-		// }
-		// free(pwd);
-		// std::cout << vec_env[vec_env.size() - 1] << std::endl;
+		char pwd[PATH_MAX];
+		getcwd(pwd, PATH_MAX);
+
+		switch (req.get_method())
+		{
+			case GET:
+				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/test.py");
+				break;
+			case POST:
+				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/upload.py");
+				break;
+			default:
+				break;
+		}
 	}
 	
-	//SCRIPT_NAME TODO .conf file parsed needed : the path of the cgi script
+	//SCRIPT_NAME .conf file parsed needed : the path of the cgi script
 	{
 		switch (req.get_method())
 		{
@@ -117,6 +116,7 @@ std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 	//REMOTE_HOST
 	
 	//REMOTE_ADDR
+	
 	//CONTENT_TYPE Only for POST request, is define in the http request with the key "Content-Type"
 	it = find_header(headers, "Content-Type");
 	if (req.get_method() == POST && it != headers.end())
@@ -161,11 +161,9 @@ char	**vec_to_tab(std::vector<std::string> vec)
 {
 	char	**tab;
 
-	//tab = (char **)malloc(sizeof(char *) * vec.size() + 1);
 	tab = new char*[vec.size() + 1];
 	for (size_t i = 0; i < vec.size(); i++)
 	{
-		//tab[i] =(char *) malloc(sizeof(char) * vec[i].size() + 1);
 		tab[i] = new char[vec[i].size() + 1];
 		strcpy(tab[i], vec[i].c_str());
 	}
