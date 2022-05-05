@@ -12,6 +12,7 @@
 #include "utils.hpp"
 #include "webserv.hpp"
 #include "config.hpp"
+#include "location_config.hpp"
 
 std::string	request_get(Request const &req)
 {
@@ -90,7 +91,9 @@ std::string	request_delete(Request const &req)
 
 std::string	request_post(Request const &req)
 {
-	std::string res = exec_cgi("server/cgi-bin/upload.py", req);
+	Config conf("default.conf"); //FOR TEST ONLY
+	std::string res = exec_cgi("server/cgi-bin/upload.py", req, *conf.getServerConfig("8000", "youpi")->getLocation("/"));
+	// std::string res = exec_cgi("server/cgi-bin/upload.py", req, conf);
 	// std::cout << "res = " << res << std::endl;
 
 	// size_t	len = res.substr(res.find("\n\n") + 2).length();

@@ -38,7 +38,7 @@ std::string exec_cgi(std::string path, Request const &req, LocationConfig conf)
 	pipe(fd_out);
 	if (!fork())
 	{
-		char **env = vec_to_tab(create_env(req));
+		char **env = vec_to_tab(create_env(req, conf));
 		fork_exec(path, fd_in,fd_out, req, env);
 	}
 	close(fd_in[1]);

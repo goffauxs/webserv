@@ -157,7 +157,6 @@ void	run_serv(std::set<int> sockets)
 			}
 		}
 	}
-	return 0;
 }
 
 int	main()

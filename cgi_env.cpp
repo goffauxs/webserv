@@ -74,21 +74,21 @@ std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
 	{
 		//Think to change the path when we will set pwd at the directory
-		char *pwd = get_current_dir_name();
+		// char *pwd = get_current_dir_name();
 		
-		switch (req.get_method())
-		{
-			case GET:
-				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/test.py");
-				break;
-			case POST:
-				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/upload.py");
-				break;
-			default:
-				break;
-		}
-		free(pwd);
-		std::cout << vec_env[vec_env.size() - 1] << std::endl;
+		// switch (req.get_method())
+		// {
+		// 	case GET:
+		// 		vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/test.py");
+		// 		break;
+		// 	case POST:
+		// 		vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/upload.py");
+		// 		break;
+		// 	default:
+		// 		break;
+		// }
+		// free(pwd);
+		// std::cout << vec_env[vec_env.size() - 1] << std::endl;
 	}
 	
 	//SCRIPT_NAME TODO .conf file parsed needed : the path of the cgi script
