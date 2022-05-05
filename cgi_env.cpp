@@ -89,7 +89,7 @@ std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 				break;
 		}
 	}
-	
+
 	//SCRIPT_NAME .conf file parsed needed : the path of the cgi script
 	{
 		switch (req.get_method())
