@@ -5,12 +5,14 @@
 #include "request.hpp"
 #include "webserv.hpp"
 #include <string.h>
+#include <unistd.h>
+#include "location_config.hpp"
 
-std::vector<std::string>    create_env(Request const &req/*, also the parse of the conf file*/)
+std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 {
-	std::vector<std::string>		vec_env;
-	std::vector<Header>				headers(req.get_headers());
-	std::vector<Header>::const_iterator   it;
+	std::vector<std::string>			vec_env;
+	std::vector<Header>					headers(req.get_headers());
+	std::vector<Header>::const_iterator	it;
 
 
 	//SERVER_NAME is define in the http request with the key "Host"
@@ -22,7 +24,6 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 	vec_env.push_back("GATEWAY_INTERFACE=CGI/1.1");
 
 	//SERVER_PROTOCOL Always HTTP/1.1 but we can find it at the end of the first line	
-//	vec_env.push_back(std::string("SERVER_PROTOCOL=HTTP/1.1")/* + req.get_version()*/);
 	switch (req.get_version())
 	{
 		case HTTP_1_0:
@@ -38,7 +39,9 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 			break;
 	}
 
-	//SERVER_PORT TODO .conf file parsed needed : 8080, 80 etc..
+	//SERVER_PORT .conf file parsed needed : 8080, 80 etc..
+	vec_env.push_back("SERVER_PORT=" + conf.getPort());
+
 	//REQUEST_METHOD at the begining of the first line
 	switch (req.get_method())
 	{
@@ -55,20 +58,54 @@ std::vector<std::string>    create_env(Request const &req/*, also the parse of t
 			break;
 	}
 	
-	//PATH_INFO in the first line, after the GET/POST, before the "?" or the second " "
-	//Obsolete
-	// {
-	// 	std::string	resource(req.get_resource());
-	// 	int			end_l = std::min(resource.find("?"), resource.rfind(" "));
-	// 	if (end_l == -1)
-	// 		vec_env.push_back("PATH_INFO=" + resource);
-	// 	else
-	// 		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find(" "), resource.size() - end_l));
-	// }
+	//PATH_INFO the info int url after the location define in the .conf before the "?" if there's one
+	//Obsolete but it did it anyway 
+	{
+		std::string	resource(req.get_resource());
+		size_t		q = resource.find('?') - 1;
+		
+		if (q > resource.size())
+	 		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find_first_not_of(conf.getPath(), resource.find(conf.getPath()))));
+		else
+	 		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find_first_not_of(conf.getPath(), resource.find(conf.getPath())), q));
+
+	}
 
 	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
+	{
+		//Think to change the path when we will set pwd at the directory
+		char *pwd = get_current_dir_name();
+		
+		switch (req.get_method())
+		{
+			case GET:
+				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/test.py");
+				break;
+			case POST:
+				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/upload.py");
+				break;
+			default:
+				break;
+		}
+		free(pwd);
+		std::cout << vec_env[vec_env.size() - 1] << std::endl;
+	}
 	
 	//SCRIPT_NAME TODO .conf file parsed needed : the path of the cgi script
+	{
+		switch (req.get_method())
+		{
+			case GET:
+				vec_env.push_back("SCRIPT_NAME=test.py");
+				break;
+			case POST:
+				vec_env.push_back("SCRIPT_NAME=upload.py");
+				break;
+			default:
+				break;
+		}
+	}
+
 	//QUERY_STRING in the first line between the "?" and the last " "
 	{
 		std::string	first_header(req.get_resource());

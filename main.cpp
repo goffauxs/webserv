@@ -9,11 +9,18 @@
 #include <vector>
 #include "header.hpp"
 #include "request.hpp"
-#include "utils.hpp"
 #include "webserv.hpp"
 #include <string.h>
+#include <fstream>
+#include <map>
+#include <stack>
+#include <list>
+#include "utils.hpp"
+#include "config.hpp"
+#include "server_config.hpp"
+#include "location_config.hpp"
 
-#define PORT 8006			
+#define PORT 8008		
 #define	BUFFSIZE 300000
 
 void	check(int val, std::string msg)
@@ -135,4 +142,5 @@ int	main()
 			}
 		}
 	}
+	return 0;
 }

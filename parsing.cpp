@@ -11,6 +11,7 @@
 #include "request.hpp"
 #include "utils.hpp"
 #include "webserv.hpp"
+#include "config.hpp"
 
 std::string	request_get(Request const &req)
 {
@@ -27,7 +28,9 @@ std::string	request_get(Request const &req)
 	if (req.get_resource().find("?") != (size_t)-1)
 	{
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
-		std::string res = exec_cgi(path + "/cgi-bin/test.py", req);
+		Config conf("default.conf"); //FOR TEST ONLY
+
+		std::string res = exec_cgi(path + "/cgi-bin/test.py", req, *conf.getServerList().front()->getLocation("/"));
 		std::cout << "res = " << res << std::endl;
 
 		size_t	len = res.substr(res.find("\n\n") + 2).length();
@@ -87,7 +90,8 @@ std::string	request_delete(Request const &req)
 
 std::string	request_post(Request const &req)
 {
-	std::string res = exec_cgi("server/cgi-bin/test.py", req);
+	Config conf("default.conf"); //FOR TEST ONLY
+	std::string res = exec_cgi("server/cgi-bin/test.py", req,  *conf.getServerConfig("8000", "youpi")->getLocation("/"));
 	std::cout << "res = " << res << std::endl;
 
 	size_t	len = res.substr(res.find("\n\n") + 2).length();

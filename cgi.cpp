@@ -5,6 +5,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/wait.h>
+#include "location_config.hpp"
 
 void		fork_exec(std::string path, int fd_o[2], int fd_i[2], Request const &req, char **env)
 {
@@ -31,7 +32,7 @@ void		fork_exec(std::string path, int fd_o[2], int fd_i[2], Request const &req, 
 	exit(1);
 }
 
-std::string exec_cgi(std::string path, Request const &req)
+std::string exec_cgi(std::string path, Request const &req, LocationConfig conf)
 {
 	int			fd[2];
 	int			fd_i[2];
@@ -42,7 +43,7 @@ std::string exec_cgi(std::string path, Request const &req)
 	pipe(fd_i);
 	if (!fork())
 	{
-		char **env = vec_to_tab(create_env(req));
+		char **env = vec_to_tab(create_env(req, conf));
 		fork_exec(path, fd, fd_i, req, env);
 	}
 	close(fd[1]);
