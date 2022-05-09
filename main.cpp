@@ -19,7 +19,7 @@
 #include "config.hpp"
 
 #define PORT 8000
-#define	BUFFSIZE 300000
+#define	BUFFSIZE 30000
 
 int	check(int val, std::string msg)
 {
@@ -76,16 +76,26 @@ int	accept_connection(int socket_fd)
 
 void	handle_connection(int client_fd)
 {
-	char buff[BUFFSIZE] = {0};
+	char		buff[BUFFSIZE] = {0};
 	std::string	response;
 
 	memset(buff, '\0', BUFFSIZE);
-
-	int	bytes_read = recv(client_fd, buff, BUFFSIZE, 0);
+	int bytes_read = recv(client_fd, buff, BUFFSIZE, 0);
 	check(bytes_read, "read error");
+	std::cout << "bytes read = " << bytes_read << std::endl;
 	std::cout << buff << std::endl;
+	std::cout << "after buff" << std::endl;
 
+	std::string tmp(buff);
+	tmp.find("Content-Length: ")
 	Request req(buff);
+
+	if (req.get_method() == POST)
+	{
+		bytes_read = recv(client_fd, buff, req.get_content_length(), 0);
+		check(bytes_read, "read error2");
+		std::cout << buff << std::endl;
+	}
 
 	response = parse(req);
 

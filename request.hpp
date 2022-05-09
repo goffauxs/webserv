@@ -40,19 +40,21 @@ public:
 		}
 
 		//get content-length
-		this->_contentLength = 0;
+		this->_content_length = 0;
 		char *endptr = NULL;
 		std::map<std::string, std::string>::iterator it = this->_headers.find("Content-Length");
 		if (it != _headers.end())
-			this->_contentLength = strtol(it->second.c_str(), &endptr, 0);
+			this->_content_length = strtol(it->second.c_str(), &endptr, 0);
 		if (endptr != '\0')
 			throw InvalidRequest();
 
-		//get body
+		// get body
 		switch (this->_method)
 		{
 			case POST:
-				requestStream.read(_content, _contentLength);
+				{
+					requestStream.read(_content, _content_length);
+				}
 				break ;
 			default:
 				break ;
@@ -65,7 +67,7 @@ public:
 	std::map<std::string, std::string> get_headers() const { return this->_headers; }
 	char	*get_request() const { return this->_request; }
 	char	*get_content() const { return this->_content; }
-	size_t	get_contentLength() const { return this->_contentLength; }
+	size_t	get_content_length() const { return this->_content_length; }
 	
 	class InvalidRequest : std::exception
 	{
@@ -82,7 +84,7 @@ private:
 	std::map<std::string, std::string> _headers;
 	char	*_request;
 	char	*_content; //to delete in destructor or we can use vector of char but less convenient
-	size_t	_contentLength;
+	size_t	_content_length;
 };
 
 #endif /* REQUEST_HPP */
