@@ -10,15 +10,15 @@
 
 std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 {
-	std::vector<std::string>			vec_env;
-	std::vector<Header>					headers(req.get_headers());
-	std::vector<Header>::const_iterator	it;
+	std::vector<std::string>							vec_env;
+	std::map<std::string, std::string>					headers(req.get_headers());
+	std::map<std::string, std::string>::const_iterator	it;
 
 
 	//SERVER_NAME is define in the http request with the key "Host"
-	it = find_header(headers, "Host");
+	it = headers.find("Host");
 	if (it != headers.end())
-		vec_env.push_back(std::string("SERVER_NAME=") + it->get_value());
+		vec_env.push_back(std::string("SERVER_NAME=") + it->second);
 
 	//GATEWAY_INTERFACE is always CGI/1.1
 	vec_env.push_back("GATEWAY_INTERFACE=CGI/1.1");
@@ -118,40 +118,40 @@ std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 	//REMOTE_ADDR
 	
 	//CONTENT_TYPE Only for POST request, is define in the http request with the key "Content-Type"
-	it = find_header(headers, "Content-Type");
+	it = headers.find("Content-Type");
 	if (req.get_method() == POST && it != headers.end())
-		vec_env.push_back("CONTENT_TYPE=" + it->get_value());
+		vec_env.push_back("CONTENT_TYPE=" + it->second);
 
 	//CONTENT_LENGTH
 	if (req.get_method() == POST)
 		vec_env.push_back("CONTENT_LENGTH=" + std::to_string(req.get_contentLength()));
 
 	//HTTP_ACCEPT is define in the http request with the key "Accept"
-	it = find_header(headers, "Accept");
+	it = headers.find("Accept");
 	if (it != headers.end())
 	{
-		vec_env.push_back("HTTP_ACCEPT=" + it->get_value());
+		vec_env.push_back("HTTP_ACCEPT=" + it->second);
 	}
 
 	//HTTP_ACCEPT_LANGUAGE is define in the http request with the key "Accept-Language"
-	it = find_header(headers, "Accept-Language");
+	it = headers.find("Accept-Language");
 	if (it != headers.end())
 	{
-		vec_env.push_back("HTTP_ACCEPT_LANGUAGE=" + it->get_value());
+		vec_env.push_back("HTTP_ACCEPT_LANGUAGE=" + it->second);
 	}
 
 	//HTTP_USER_AGENT is define in the http request with the key "User-Agent"
-	it = find_header(headers, "User-Agent");
+	it = headers.find("User-Agent");
 	if (it != headers.end())
 	{
-		vec_env.push_back("HTTP_USER_AGENT=" + it->get_value());
+		vec_env.push_back("HTTP_USER_AGENT=" + it->second);
 	}
 
 	//HTTP_REFERER is define in the http request with the key "Referer"
-	it = find_header(headers, "Referer");
+	it = headers.find("Referer");
 	if (it != headers.end())
 	{
-		vec_env.push_back("HTTP_REFERER=" + it->get_value());
+		vec_env.push_back("HTTP_REFERER=" + it->second);
 	}
 
 	return (vec_env);
