@@ -92,7 +92,7 @@ std::string	request_delete(Request const &req)
 std::string	request_post(Request const &req)
 {
 	Config conf("default.conf"); //FOR TEST ONLY
-	std::string res = exec_cgi("server/cgi-bin/upload.py", req, *conf.getServerConfig("8000", "youpi")->getLocation("/"));
+	std::string res = exec_cgi("server/cgi-bin/upload.py", req, *conf.getServerConfig(8000, "youpi")->getLocation("/"));
 	// std::string res = exec_cgi("server/cgi-bin/upload.py", req, conf);
 	// std::cout << "res = " << res << std::endl;
 

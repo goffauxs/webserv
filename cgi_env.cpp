@@ -40,7 +40,7 @@ std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 	}
 
 	//SERVER_PORT .conf file parsed needed : 8080, 80 etc..
-	vec_env.push_back("SERVER_PORT=" + conf.getPort());
+	vec_env.push_back("SERVER_PORT=" + to_string(conf.getPort()));
 
 	//REQUEST_METHOD at the begining of the first line
 	switch (req.get_method())
