@@ -73,10 +73,11 @@ std::string mime_select(std::string ext)
 	return (mime[ext]);
 }
 
-#include <iostream>
+/*#include <iostream>
 
 int main(int ac, char **av)
 {
     if (ac > 1)
 	std::cout << mime_select(av[1]) << std::endl;
 }
+*/
