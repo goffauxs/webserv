@@ -20,7 +20,7 @@
 #include "server_config.hpp"
 #include "location_config.hpp"
 
-#define PORT 8008		
+#define PORT 8009		
 #define	BUFFSIZE 300000
 
 void	check(int val, std::string msg)
