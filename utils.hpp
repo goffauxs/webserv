@@ -1,7 +1,6 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 #include <string>
-#include <vector>
 #include <sstream>
 
 const static std::string LINE_END = "\r\n";
@@ -45,7 +44,6 @@ enum Directive
 	INVALID_DIRECTIVE
 };
 
-std::vector<std::string> split(const std::string& str, const std::string& delim = " ");
 std::string to_string(Method method);
 Method method_from_string(const std::string& method);
 std::string to_string(Version version);

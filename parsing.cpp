@@ -46,14 +46,13 @@ std::string	request_get(Request const &req)
 		stream << ifs.rdbuf();
 		std::string	body = stream.str();
 
-		std::vector<Header> headers = req.get_headers();
+		std::map<std::string, std::string> headers(req.get_headers());
 		std::string	accept;
-		for (std::vector<Header>::iterator it = headers.begin(); it != headers.end(); it++)
-			if (it->get_key() == "Accept")
-			{
-				accept = it->get_value();
-				break ;
-			}
+		std::map<std::string, std::string>::iterator it = headers.find("Accept");
+		if (it != headers.end())
+		{
+			accept = it->second;
+		}
 		size_t	start = 0;
 		size_t	end = std::min(accept.find(",", start), accept.find("\n", start));
 		return ("HTTP/1.1 200 OK\nContent-Type: " + accept.substr(start, end - start)
@@ -92,7 +91,7 @@ std::string	request_delete(Request const &req)
 std::string	request_post(Request const &req)
 {
 	Config conf("default.conf"); //FOR TEST ONLY
-	std::string res = exec_cgi("server/cgi-bin/upload.py", req, *conf.getServerConfig("8000", "youpi")->getLocation("/"));
+	std::string res = exec_cgi("server/cgi-bin/upload.py", req, *conf.getServerConfig(8000, "youpi")->getLocation("/"));
 	// std::string res = exec_cgi("server/cgi-bin/upload.py", req, conf);
 	// std::cout << "res = " << res << std::endl;
 
