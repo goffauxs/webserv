@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <algorithm>
 #include <netinet/in.h>
 #include <string>
 #include <iostream>
@@ -19,7 +20,7 @@
 #include "config.hpp"
 
 #define PORT 8000
-#define	BUFFSIZE 300000
+#define	BUFFSIZE 65536
 
 int	check(int val, std::string msg)
 {
@@ -74,9 +75,14 @@ int	accept_connection(int socket_fd)
 	return (client_fd);
 }
 
-int	read_connection(int client_fd, std::map<int, std::string>& requests)
+std::vector<char>::iterator vector_find(std::vector<char>& vector, const char* str)
 {
-	char buff[BUFFSIZE] = {0};
+	return std::search(vector.begin(), vector.end(), str, str + strlen(str) - 1);
+}
+
+int	read_connection(int client_fd, std::map<int, std::vector<char> >& requests)
+{
+	char buff[BUFFSIZE + 1] = {0};
 
 	int ret = recv(client_fd, buff, BUFFSIZE, 0);
 
@@ -91,15 +97,20 @@ int	read_connection(int client_fd, std::map<int, std::string>& requests)
 		return -1;
 	}
 
-	requests[client_fd] += std::string(buff);
+	for (int i = 0; i < ret; i++)
+		requests[client_fd].push_back(buff[i]);
 
-	size_t i = requests[client_fd].find("\r\n\r\n");
-	if (i != std::string::npos)
+	size_t i = vector_find(requests[client_fd], "\r\n\r\n") - requests[client_fd].begin();
+	if (i != requests[client_fd].size())
 	{
-		if (requests[client_fd].find("Content-Length: ") == std::string::npos)
+		if (vector_find(requests[client_fd], "Content-Length: ") == requests[client_fd].end())
 			return 0;
 		
-		size_t len = std::atoi(requests[client_fd].substr(requests[client_fd].find("Content-Length: ") + 16, 10).c_str());
+		std::string tmp(vector_find(requests[client_fd], "Content-Length: ") + 16, vector_find(requests[client_fd], "Content-Length: ") + 26);
+		// for (std::vector<char>::iterator it = vector_find(requests[client_fd], "Content-Length: ") + 16; it != it + 10; it++)
+		// 	tmp.push_back(*it);
+		size_t len = std::atoi(tmp.c_str());
+		// std::cout << requests[client_fd].size() << " | " << len + i + 4 << std::endl;
 		if (requests[client_fd].size() >= len + i + 4)
 			return 0;
 		else
@@ -108,15 +119,15 @@ int	read_connection(int client_fd, std::map<int, std::string>& requests)
 	return 1;
 }
 
-int write_connection(int client_fd, std::map<int, std::string>& requests)
+int write_connection(int client_fd, std::map<int, std::vector<char> >& requests)
 {
 	static std::map<int, size_t> sent;
 
 	if (!sent.count(client_fd))
 		sent[client_fd] = 0;
 	
-	std::string str = requests[client_fd].substr(sent[client_fd], BUFFSIZE);
-	int ret = send(client_fd, str.c_str(), str.size(), 0);
+	size_t size = std::min((unsigned long)BUFFSIZE, requests[client_fd].size() - sent[client_fd]);
+	int ret = send(client_fd, &requests[client_fd][sent[client_fd]], size, 0);
 
 	if (ret == -1)
 	{
@@ -139,44 +150,11 @@ int write_connection(int client_fd, std::map<int, std::string>& requests)
 	}
 }
 
-void	handle_connection(int client_fd)
-{
-	char buff[BUFFSIZE] = {0};
-	std::string	response;
-
-	memset(buff, '\0', BUFFSIZE);
-
-	int	bytes_read = recv(client_fd, buff, BUFFSIZE, 0);
-	check(bytes_read, "read error");
-	std::cout << buff << std::endl;
-
-	Request req(buff);
-
-	response = parse(req);
-
-	int len = response.size();
-	int sent = 0;
-	while (len > 0)
-	{
-		int bytes_sent = send(client_fd, response.c_str() + sent, len, 0);
-
-		if (bytes_sent == 0)
-			break;
-		if (bytes_sent > 0)
-		{
-			len -= bytes_sent;
-			sent += bytes_sent;
-		}
-	}
-
-	close(client_fd);
-}
-
 void	run_serv(std::set<int> servers)
 {
 	fd_set	master, read_fds, write_fds;
 	// int		client_fd;
-	std::map<int, std::string> requests;
+	std::map<int, std::vector<char> > requests;
 	std::set<int> clients;
 	std::vector<int> ready;
 
@@ -229,16 +207,20 @@ void	run_serv(std::set<int> servers)
 			{
 				int ret = read_connection(*it, requests);
 
+				// std::cout << "ret: " << ret << std::endl;
 				if (ret == 0)
 				{
-					Request req(requests[*it].c_str());
-					// std::cout << "body = " << req.get_contentLength() << std::endl;
-					char *tmp = req.get_content();
-					for (size_t i = 0; i < req.get_contentLength(); i++)
-						std::cout << tmp[i];
-					std::cout << std::endl;
-
-					requests[*it] = parse(req);
+					// for (std::vector<char>::iterator itr = requests[*it].begin(); itr != requests[*it].end(); itr++)
+					// 	std::cout << *itr;
+					// std::cout << std::endl;
+					requests[*it].push_back('\0');
+					char* tmp = reinterpret_cast<char*>(&requests[*it][0]);
+					// std::cout << tmp << std::endl;
+					Request req(tmp);
+					
+					std::string str = parse(req);
+					std::vector<char> vec(str.begin(), str.end());
+					requests[*it] = vec;
 					ready.push_back(*it);
 				}
 				else if (ret == -1)
@@ -269,26 +251,6 @@ void	run_serv(std::set<int> servers)
 				break;
 			}
 		}
-
-		// for (int i = 0; i <= fd_max; i++)
-		// {
-		// 	if (FD_ISSET(i, &read_fds)) //check if fd i is ready
-		// 	{
-		// 		if (sockets.count(i))
-		// 		{
-		// 			client_fd = accept_connection(i);
-		// 			FD_SET(client_fd, &master); //add new connection to set of fds we're watching
-		// 			if (client_fd > fd_max)
-		// 				fd_max = client_fd;
-		// 			break ;
-		// 		}
-		// 		else
-		// 		{
-		// 			handle_connection(i);
-		// 			FD_CLR(i, &master);
-		// 		}
-		// 	}
-		// }
 	}
 }
 
