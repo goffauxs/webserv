@@ -10,14 +10,15 @@
 void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req, char **env)
 {
 	char	*av[3];
+	(void)req;
 
 	av[0] = (char *)"python";
 	av[1] = (char *)/*"server/cgi-bin/upload.py";*/path.c_str();
 	av[2] = NULL;
 	dup2(fd_in[0], 0);
 	dup2(fd_out[1], 1);
-	if (req.get_content())
-		write(fd_in[1], req.get_content(), req.get_contentLength());
+	// if (req.get_content())
+	// 	write(fd_in[1], req.get_content(), req.get_contentLength());
 	close(fd_out[0]);
 	close(fd_out[1]);
 	close(fd_in[1]);
@@ -41,6 +42,9 @@ std::string exec_cgi(std::string path, Request const &req, LocationConfig conf)
 		char **env = vec_to_tab(create_env(req, conf));
 		fork_exec(path, fd_in,fd_out, req, env);
 	}
+	dup2(fd_in[0], 0);
+	if (req.get_content())
+		write(fd_in[1], req.get_content(), req.get_contentLength());
 	close(fd_in[1]);
 	close(fd_in[0]);
 	close(fd_out[1]);
