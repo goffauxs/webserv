@@ -53,8 +53,6 @@ std::string	request_get(Request const &req)
 		{
 			accept = it->second;
 		}
-		size_t	start = 0;
-		size_t	end = std::min(accept.find(",", start), accept.find("\n", start));
 		std::string mime = mime_select(action.substr(std::min(action.rfind("."), action.length())));
 		std::cout << "action :" << action << std::endl;
 		std::cout << "MIME : " << mime << std::endl;
