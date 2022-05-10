@@ -69,8 +69,12 @@ std::map<std::string, std::string> gen_mime()
 
 std::string mime_select(std::string ext)
 {
-	static std::map<std::string, std::string>    mime = gen_mime();
-	return (mime[ext]);
+	static std::map<std::string, std::string>    		mime = gen_mime();
+	std::map<std::string, std::string>::iterator	it = mime.find(ext);
+
+	if (it != mime.end())
+		return (it->second);
+	return ("text/html");
 }
 
 /*#include <iostream>

@@ -13,7 +13,8 @@ SRCS =	cgi.cpp\
 		autoindex.cpp\
 		config.cpp\
 		location_config.cpp\
-		server_config.cpp
+		server_config.cpp\
+		mime_select.cpp
 
 OBJ = $(SRCS:%.cpp=%.o)
 
