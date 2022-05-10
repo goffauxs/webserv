@@ -24,8 +24,3 @@ std::string autoindex_gen(std::string path, std::string path2)
 	return_string.append("\n</p>\n\n</body>\n</html>");
 	return (return_string);
 }
-
-/*int main()
-{
-	std::cout << autoindex_gen(".") << std::endl;
-}*/

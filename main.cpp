@@ -185,6 +185,7 @@ void	run_serv(std::set<int> servers)
 		{
 			if (FD_ISSET(*it, &write_fds))
 			{
+				std::cout << "here" << std::endl;
 				int ret = write_connection(*it, requests);
 
 				if (ret == 0)
@@ -203,22 +204,19 @@ void	run_serv(std::set<int> servers)
 
 		for (std::set<int>::iterator it = clients.begin(); ret && it != clients.end(); it++)
 		{
+			std::cout << "read" << std::endl;
 			if (FD_ISSET(*it, &read_fds))
 			{
 				int ret = read_connection(*it, requests);
 
-				// std::cout << "ret: " << ret << std::endl;
 				if (ret == 0)
 				{
-					// for (std::vector<char>::iterator itr = requests[*it].begin(); itr != requests[*it].end(); itr++)
-					// 	std::cout << *itr;
-					// std::cout << std::endl;
 					requests[*it].push_back('\0');
 					char* tmp = reinterpret_cast<char*>(&requests[*it][0]);
-					// std::cout << tmp << std::endl;
 					Request req(tmp);
 					
 					std::string str = parse(req);
+					std::cout << "parse : " << str << std::endl;
 					std::vector<char> vec(str.begin(), str.end());
 					requests[*it] = vec;
 					ready.push_back(*it);
@@ -251,6 +249,7 @@ void	run_serv(std::set<int> servers)
 				break;
 			}
 		}
+		std::cout << "loop" << std::endl;
 	}
 }
 
