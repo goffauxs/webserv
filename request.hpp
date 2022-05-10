@@ -11,11 +11,11 @@ class Request
 public:
 	Request(Method method, const std::string& resource, const std::map<std::string, std::string>& headers, Version version = HTTP_1_1)
 		: _version(version), _method(method), _resource(resource), _headers(headers) {}
-	Request(char *buff)
+	Request(const char *buff)
 		: _content(NULL)
 	{
-		this->_request = buff;
-		std::string	request = buff;
+		// this->_request = buff;
+		std::string	request(buff);
 		std::stringstream requestStream(request);
 		std::string request_line;
 
@@ -63,7 +63,7 @@ public:
 	Version get_version() const { return this->_version; }
 	std::string get_resource() const { return this->_resource; }
 	std::map<std::string, std::string> get_headers() const { return this->_headers; }
-	char	*get_request() const { return this->_request; }
+	// char	*get_request() const { return this->_request; }
 	char	*get_content() const { return this->_content; }
 	size_t	get_contentLength() const { return this->_contentLength; }
 	
@@ -80,7 +80,7 @@ private:
 	Method _method;
 	std::string _resource;
 	std::map<std::string, std::string> _headers;
-	char	*_request;
+	// char	*_request;
 	char	*_content; //to delete in destructor or we can use vector of char but less convenient
 	size_t	_contentLength;
 };

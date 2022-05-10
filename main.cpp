@@ -74,6 +74,71 @@ int	accept_connection(int socket_fd)
 	return (client_fd);
 }
 
+int	read_connection(int client_fd, std::map<int, std::string>& requests)
+{
+	char buff[BUFFSIZE] = {0};
+
+	int ret = recv(client_fd, buff, BUFFSIZE, 0);
+
+	if (ret == 0 || ret == -1)
+	{
+		close(client_fd);
+		requests.erase(client_fd);
+		if (!ret)
+			std::cerr << "\rConnection was closed by client." << std::endl;
+		else
+			std::cerr << "\rRead error, closing connection." << std::endl;
+		return -1;
+	}
+
+	requests[client_fd] += std::string(buff);
+
+	size_t i = requests[client_fd].find("\r\n\r\n");
+	if (i != std::string::npos)
+	{
+		if (requests[client_fd].find("Content-Length: ") == std::string::npos)
+			return 0;
+		
+		size_t len = std::atoi(requests[client_fd].substr(requests[client_fd].find("Content-Length: ") + 16, 10).c_str());
+		if (requests[client_fd].size() >= len + i + 4)
+			return 0;
+		else
+			return 1;
+	}
+	return 1;
+}
+
+int write_connection(int client_fd, std::map<int, std::string>& requests)
+{
+	static std::map<int, size_t> sent;
+
+	if (!sent.count(client_fd))
+		sent[client_fd] = 0;
+	
+	std::string str = requests[client_fd].substr(sent[client_fd], BUFFSIZE);
+	int ret = send(client_fd, str.c_str(), str.size(), 0);
+
+	if (ret == -1)
+	{
+		close(client_fd);
+		requests.erase(client_fd);
+		sent[client_fd] = 0;
+		return -1;
+	}
+	else
+	{
+		sent[client_fd] += ret;
+		if (sent[client_fd] >= requests[client_fd].size())
+		{
+			requests.erase(client_fd);
+			sent[client_fd] = 0;
+			return 0;
+		}
+		else
+			return 1;
+	}
+}
+
 void	handle_connection(int client_fd)
 {
 	char buff[BUFFSIZE] = {0};
@@ -107,48 +172,120 @@ void	handle_connection(int client_fd)
 	close(client_fd);
 }
 
-void	run_serv(std::set<int> sockets)
+void	run_serv(std::set<int> servers)
 {
-	fd_set	master, read_fds;
-	int		client_fd;
+	fd_set	master, read_fds, write_fds;
+	// int		client_fd;
+	std::map<int, std::string> requests;
+	std::set<int> clients;
+	std::vector<int> ready;
 
 	FD_ZERO(&master); //zero out master
-	for (std::set<int>::iterator it = sockets.begin(); it != sockets.end(); it++)
+	for (std::set<int>::iterator it = servers.begin(); it != servers.end(); it++)
 		FD_SET(*it, &master); //add socket_fd to current set
 	//master = set of fds that we're watching
 	//read_fds = tmp that will contain all the set of fds that are ready after we give it to select
 
-	int	fd_max = *sockets.rbegin(); //used to reduce the amount of times we're gonna go through the for loop
+	int	fd_max = *servers.rbegin(); //used to reduce the amount of times we're gonna go through the for loop
 
 	struct timeval	tv;
 	tv.tv_sec = 1;
 	tv.tv_usec = 0;
 	while (1)
 	{
+		int ret = 0;
 		read_fds = master; //read_fds is a tmp because select is destructive
 
-		//select(range of fd to check, set of fds to check for read, for write, for errors, timeout value)
-		check(select(fd_max + 1, &read_fds, NULL, NULL, &tv), "Select error");
+		FD_ZERO(&write_fds);
+		for (std::vector<int>::iterator it = ready.begin(); it != ready.end(); it++)
+			FD_SET(*it, &write_fds);
 
-		for (int i = 0; i <= fd_max; i++)
+		//select(range of fd to check, set of fds to check for read, for write, for errors, timeout value)
+		ret = check(select(fd_max + 1, &read_fds, &write_fds, NULL, &tv), "Select error");
+
+		for (std::vector<int>::iterator it = ready.begin(); ret && it != ready.end(); it++)
 		{
-			if (FD_ISSET(i, &read_fds)) //check if fd i is ready
+			if (FD_ISSET(*it, &write_fds))
 			{
-				if (sockets.count(i))
+				int ret = write_connection(*it, requests);
+
+				if (ret == 0)
+					ready.erase(it);
+				else if (ret == -1)
 				{
-					client_fd = accept_connection(i);
-					FD_SET(client_fd, &master); //add new connection to set of fds we're watching
-					if (client_fd > fd_max)
-						fd_max = client_fd;
-					break ;
+					FD_CLR(*it, &master);
+					FD_CLR(*it, &read_fds);
+					clients.erase(*it);
+					ready.erase(it);
 				}
-				else
-				{
-					handle_connection(i);
-					FD_CLR(i, &master);
-				}
+				ret = 0;
+				break;
 			}
 		}
+
+		for (std::set<int>::iterator it = clients.begin(); ret && it != clients.end(); it++)
+		{
+			if (FD_ISSET(*it, &read_fds))
+			{
+				int ret = read_connection(*it, requests);
+				// std::cout << "ret = " << ret << std::endl;
+
+				if (ret == 0)
+				{
+					Request req(requests[*it].c_str());
+					// std::cout << to_string(req.get_method()) << std::endl;
+
+					requests[*it] = parse(req);
+					ready.push_back(*it);
+				}
+				else if (ret == -1)
+				{
+					FD_CLR(*it, &master);
+					FD_CLR(*it, &read_fds);
+					clients.erase(*it);
+				}
+				ret = 0;
+				break;
+			}
+		}
+
+		for (std::set<int>::iterator it = servers.begin(); ret && it != servers.end(); it++)
+		{
+			if (FD_ISSET(*it, &read_fds))
+			{
+				int socket = accept_connection(*it);
+
+				if (socket != -1)
+				{
+					FD_SET(socket, &master);
+					clients.insert(socket);
+					if (socket > fd_max)
+						fd_max = socket;
+				}
+				ret = 0;
+				break;
+			}
+		}
+
+		// for (int i = 0; i <= fd_max; i++)
+		// {
+		// 	if (FD_ISSET(i, &read_fds)) //check if fd i is ready
+		// 	{
+		// 		if (sockets.count(i))
+		// 		{
+		// 			client_fd = accept_connection(i);
+		// 			FD_SET(client_fd, &master); //add new connection to set of fds we're watching
+		// 			if (client_fd > fd_max)
+		// 				fd_max = client_fd;
+		// 			break ;
+		// 		}
+		// 		else
+		// 		{
+		// 			handle_connection(i);
+		// 			FD_CLR(i, &master);
+		// 		}
+		// 	}
+		// }
 	}
 }
 
