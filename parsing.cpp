@@ -31,7 +31,7 @@ std::string	request_get(Request const &req)
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
 		Config conf("default.conf"); //FOR TEST ONLY
 
-		std::string res = exec_cgi(path + "/cgi-bin/test.py", req, *conf.getServerList().front()->getLocation("/"));
+		std::string res = exec_cgi(path + "/cgi-bin/get.py", req, *conf.getServerList().front()->getLocation("/"));
 		std::cout << "res = " << res << std::endl;
 
 		size_t	len = res.substr(res.find("\n\n") + 2).length();

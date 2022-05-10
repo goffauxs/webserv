@@ -16,6 +16,7 @@ void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req
 	av[2] = NULL;
 	dup2(fd_in[0], 0);
 	dup2(fd_out[1], 1);
+	std::cout << "content = " << req.get_content() << std::endl;
 	if (req.get_content())
 		write(fd_in[1], req.get_content(), req.get_contentLength());
 	close(fd_out[0]);

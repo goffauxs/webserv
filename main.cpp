@@ -228,12 +228,15 @@ void	run_serv(std::set<int> servers)
 			if (FD_ISSET(*it, &read_fds))
 			{
 				int ret = read_connection(*it, requests);
-				// std::cout << "ret = " << ret << std::endl;
 
 				if (ret == 0)
 				{
 					Request req(requests[*it].c_str());
-					// std::cout << to_string(req.get_method()) << std::endl;
+					// std::cout << "body = " << req.get_contentLength() << std::endl;
+					char *tmp = req.get_content();
+					for (size_t i = 0; i < req.get_contentLength(); i++)
+						std::cout << tmp[i];
+					std::cout << std::endl;
 
 					requests[*it] = parse(req);
 					ready.push_back(*it);
