@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "location_config.hpp"
+#include <stdio.h>
 
 void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req, char **env)
 {
@@ -23,7 +24,7 @@ void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req
 	close(fd_out[1]);
 	close(fd_in[1]);
 	close(fd_in[0]);
-	execve("/usr/bin/python", av, env);
+	execve("/usr/bin/python2.7", av, env);
 	perror("The error is :");
 	exit(1);
 }

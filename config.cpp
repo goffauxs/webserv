@@ -2,10 +2,11 @@
 #include <stack>
 #include <fstream>
 #include <iostream>
+#include <stdlib.h>
 
 Config::Config(const std::string& path)
 {
-	std::fstream ifs(path, std::fstream::in);
+	std::fstream ifs(path.c_str(), std::fstream::in);
 
 	if (ifs.good())
 	{

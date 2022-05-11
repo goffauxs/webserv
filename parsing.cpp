@@ -41,7 +41,7 @@ std::string	request_get(Request const &req)
 	}
 	else
 		action = req.get_resource();
-	std::ifstream	ifs(path + action);
+	std::ifstream	ifs((path + action).c_str());
 	if (ifs)
 	{
 		std::ostringstream	stream;
@@ -56,8 +56,6 @@ std::string	request_get(Request const &req)
 			accept = it->second;
 		}
 		std::string mime = mime_select(action.substr(std::min(action.rfind("."), action.length())));
-		std::cout << "action :" << action << std::endl;
-		std::cout << "MIME : " << mime << std::endl;
 		return ("HTTP/1.1 200 OK\nContent-Type: " + mime
 		+ "\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 	}

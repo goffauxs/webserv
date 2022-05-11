@@ -5,6 +5,8 @@
 #include <iostream>
 #include <map>
 #include "utils.hpp"
+#include <limits>
+#include <string.h>
 
 class Request
 {

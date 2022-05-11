@@ -62,6 +62,8 @@ std::string to_string(Version version)
 		return "HTTP/1.1";
 	case HTTP_2_0:
 		return "HTTP/2.0";
+	default:
+		return "HTTP/1.0";
 	}
 }
 
