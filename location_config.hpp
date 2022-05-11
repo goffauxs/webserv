@@ -9,7 +9,7 @@ class LocationConfig : public ServerConfig
 {
 public:
 	LocationConfig(const ServerConfig& other, const std::string& path, const std::string& content);
-	~LocationConfig() {}
+	virtual ~LocationConfig() {}
 	LocationConfig(const LocationConfig& other);
 
 	const std::string&		getPath() const;

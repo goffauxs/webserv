@@ -4,16 +4,22 @@ form = cgi.FieldStorage()
 
 fileitem = form['file1']
 
+path = "server/uploads/"
+
+isExist = os.path.exists(path)
+
+if not isExist:
+	os.makedirs(path)
+
 if fileitem.filename:
 	fn = os.path.basename(fileitem.filename)
-	open("server/uploads/" + fn, 'wb').write(fileitem.file.read())
+	open(path + fn, 'wb').write(fileitem.file.read())
 	message = "The file '" + fn + "' was uploaded successfully"
 
 else:
 	message = "No file was uploaded"
 
 print """\
-Content-Type: text/html\n
 <html><body>
 <p>%s</p>
 </body></html>

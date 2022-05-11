@@ -17,6 +17,7 @@ std::string autoindex_gen(std::string path, std::string path2)
 		files.insert(current->d_name);
 		current = readdir(direc);
 	}
+	closedir(direc);
 	for (std::set<std::string>::iterator it = files.begin(); it != files.end(); it++)
 	{
 		return_string.append("\n\t<a href=\"." + path2 + ((path2[path2.length() - 1] == '/') ? "" : "/") + *it + "\">" + *it + "<br>");

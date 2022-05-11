@@ -1,10 +1,9 @@
 #include "location_config.hpp"
-// #include <iostream>
+#include <iostream>
 
 LocationConfig::LocationConfig(const ServerConfig& other, const std::string& path, const std::string& content)
 	: _path(path), _autoindex(false), _upload(false)
 {
-	// std::cout << "here" << std::endl;
 	this->_root = other.getRoot();
 	this->_index = other.getIndex();
 	this->_server_name = other.getServerName();
@@ -61,8 +60,16 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& pat
 }
 
 LocationConfig::LocationConfig(const LocationConfig& other)
-	: ServerConfig(other), _path(other._path), _autoindex(other._autoindex), _upload(other._upload), _cgi_ext(other._cgi_ext), _upload_dir(other._upload_dir)
+	: _path(other._path), _autoindex(other._autoindex), _upload(other._upload), _cgi_ext(other._cgi_ext), _upload_dir(other._upload_dir)
 {
+	this->_root = other.getRoot();
+	this->_index = other.getIndex();
+	this->_server_name = other.getServerName();
+	this->_host = other.getHost();
+	this->_port = other.getPort();
+	this->_client_body_buffer_size = other.getClientBodyBufferSize();
+	this->_error_pages = other.getErrorPages();
+	this->_allowed_methods = other.getAllowedMethods();
 }
 
 const std::string& 		LocationConfig::getPath() const					{ return this->_path; }

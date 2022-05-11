@@ -93,8 +93,10 @@ ServerConfig& ServerConfig::operator=(const ServerConfig& rhs)
 ServerConfig::ServerConfig(const ServerConfig& other)
 	: _root(other._root), _index(other._index), _server_name(other._server_name),
 		_host(other._host), _port(other._port), _client_body_buffer_size(other._client_body_buffer_size),
-		_error_pages(other._error_pages), _allowed_methods(other._allowed_methods), _locations(other._locations)
+		_error_pages(other._error_pages), _allowed_methods(other._allowed_methods)
 {
+	for (std::map<std::string, LocationConfig*>::const_iterator it = other._locations.begin(); it != other._locations.end(); it++)
+		this->_locations.insert(std::make_pair(it->first, new LocationConfig(*it->second)));
 }
 
 ServerConfig::~ServerConfig()

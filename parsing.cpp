@@ -24,18 +24,20 @@ std::string	request_get(Request const &req)
 		std::string	res;
 		res = autoindex_gen(path + req.get_resource(), req.get_resource());
 		if (res != "")
-			return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(res.length()) + "\nContent-type:text/html\n" + res);
+			return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(res.length()) + "\nContent-type:text/html\n\n" + res);
 	}
-	if (req.get_resource().find("?") != (size_t)-1)
+	if (req.get_resource().find("?") != std::string::npos)
 	{
 		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
 		Config conf("default.conf"); //FOR TEST ONLY
 
-		std::string res = exec_cgi(path + "/cgi-bin/get.py", req, *conf.getServerList().front()->getLocation("/"));
+		LocationConfig* location = conf.getServerList().front()->getLocation("/");
+		std::string res = exec_cgi(path + "/cgi-bin/get.py", req, *location);
+		delete location;
 		std::cout << "res = " << res << std::endl;
 
 		size_t	len = res.substr(res.find("\n\n") + 2).length();
-		return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(len) + "\n" + res);
+		return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(len) + "\n\n" + res);
 	}
 	else
 		action = req.get_resource();
@@ -92,12 +94,17 @@ std::string	request_delete(Request const &req)
 std::string	request_post(Request const &req)
 {
 	Config conf("default.conf"); //FOR TEST ONLY
-	std::string res = exec_cgi("server/cgi-bin/upload.py", req, *conf.getServerConfig(8000, "youpi")->getLocation("/"));
+
+	ServerConfig *server = conf.getServerConfig(8000, "youpi");
+	LocationConfig* location = server->getLocation("/");
+	std::string res = exec_cgi("server/cgi-bin/upload.py", req, *location);
+	delete location;
+	delete server;
 	// std::string res = exec_cgi("server/cgi-bin/upload.py", req, conf);
 	// std::cout << "res = " << res << std::endl;
 
 	// size_t	len = res.substr(res.find("\n\n") + 2).length();
-	return ("HTTP/1.1 200 OK\nContent-Length: " + std::to_string(res.length()) + "\n" + res);
+	return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
 }
 
 std::string	parse(Request const &req)

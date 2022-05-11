@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include "location_config.hpp"
 
-std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
+std::vector<std::string>    create_env(Request const &req, const LocationConfig& conf)
 {
 	std::vector<std::string>							vec_env;
 	std::map<std::string, std::string>					headers(req.get_headers());
@@ -124,7 +124,7 @@ std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 
 	//CONTENT_LENGTH
 	if (req.get_method() == POST)
-		vec_env.push_back("CONTENT_LENGTH=" + std::to_string(req.get_contentLength()));
+		vec_env.push_back("CONTENT_LENGTH=" + std::to_string(req.get_content_length()));
 
 	//HTTP_ACCEPT is define in the http request with the key "Accept"
 	it = headers.find("Accept");

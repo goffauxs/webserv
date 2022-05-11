@@ -13,6 +13,7 @@ SRCS =	cgi.cpp\
 		config.cpp\
 		server_config.cpp\
 		location_config.cpp\
+		request.cpp\
 		autoindex.cpp\
 		mime_select.cpp
 

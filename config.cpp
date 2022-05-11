@@ -34,15 +34,20 @@ Config::Config(const std::string& path)
 			server_str[diff] = '\0';
 			std::string tmp(server_str);
 			_list.push_back(new ServerConfig(tmp));
-			delete server_str;
+			delete [] server_str;
 			begin = end;
 		}
+	}
+	else
+	{
+		std::cerr << "Error: error opening file '" << path << "'" << std::endl;
+		exit(1);
 	}
 }
 
 Config::~Config()
 {
-	for (std::list<ServerConfig*>::const_iterator it = _list.begin(); it != _list.end(); it++)
+	for (std::list<ServerConfig*>::iterator it = _list.begin(); it != _list.end(); it++)
 		delete *it;
 	_list.clear();
 }
