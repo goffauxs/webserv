@@ -34,10 +34,9 @@ std::string	request_get(Request const &req)
 		LocationConfig* location = conf.getServerList().front()->getLocation("/");
 		std::string res = exec_cgi(path + "/cgi-bin/get.py", req, *location);
 		delete location;
-		std::cout << "res = " << res << std::endl;
 
 		size_t	len = res.substr(res.find("\n\n") + 2).length();
-		return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(len) + "\n\n" + res);
+		return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(len) + "\n" + res);
 	}
 	else
 		action = req.get_resource();
