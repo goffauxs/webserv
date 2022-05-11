@@ -249,9 +249,14 @@ void	run_serv(std::set<int> servers)
 	}
 }
 
-int	main()
+int	main(int argc, char **argv)
 {
-	Config				conf("default.conf");
-	std::set<int>		sockets = setup_serv(1000, conf);
-	run_serv(sockets);
+	if (argc == 2)
+	{
+		Config				conf(argv[1]);
+		std::set<int>		sockets = setup_serv(1000, conf);
+		run_serv(sockets);
+	}
+	std::cout << "Error: Please provide a configuration file" << std::endl;
+	return (1);
 }
