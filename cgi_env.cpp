@@ -124,7 +124,7 @@ std::vector<std::string>    create_env(Request const &req, LocationConfig conf)
 
 	//CONTENT_LENGTH
 	if (req.get_method() == POST)
-		vec_env.push_back("CONTENT_LENGTH=" + std::to_string(req.get_contentLength()));
+		vec_env.push_back("CONTENT_LENGTH=" + to_string(req.get_contentLength()));
 
 	//HTTP_ACCEPT is define in the http request with the key "Accept"
 	it = headers.find("Accept");

@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "location_config.hpp"
+#include <stdio.h>
 
 void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req, char **env)
 {

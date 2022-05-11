@@ -2,14 +2,15 @@
 #include <stack>
 #include <fstream>
 #include <iostream>
+#include <stdlib.h>
 
 Config::Config(const std::string& path)
 {
-	std::ifstream ifs(path, std::ifstream::in);
+	std::fstream ifs(path.c_str(), std::fstream::in);
 
 	if (ifs.good())
 	{
-		if (ifs.peek() == std::ifstream::traits_type::eof())
+		if (ifs.peek() == std::fstream::traits_type::eof())
 		{
 			std::cerr << "Error: " << path << " is empty!" << std::endl;
 			exit(1);
@@ -18,8 +19,8 @@ Config::Config(const std::string& path)
 			return ;
 		ifs.seekg(0, ifs.beg);
 		char* server_str;
-		std::ifstream::pos_type begin = ifs.tellg();
-		std::ifstream::pos_type end;
+		std::fstream::pos_type begin = ifs.tellg();
+		std::fstream::pos_type end;
 		std::streamsize diff;
 		while (!ifs.eof())
 		{
@@ -34,7 +35,7 @@ Config::Config(const std::string& path)
 			server_str[diff] = '\0';
 			std::string tmp(server_str);
 			_list.push_back(new ServerConfig(tmp));
-			delete server_str;
+			delete [] server_str;
 			begin = end;
 		}
 	}
@@ -66,7 +67,7 @@ ServerConfig* Config::getServerConfig(int port, const std::string& server_name) 
 
 std::list<ServerConfig*> Config::getServerList() const { return _list; }
 
-int Config::has_uneven_brackets(std::ifstream& stream)
+int Config::has_uneven_brackets(std::fstream& stream)
 {
 	std::stack<int> brackets;
 
@@ -93,7 +94,7 @@ int Config::has_uneven_brackets(std::ifstream& stream)
 		throw BracketException(OPEN, line_counter);
 }
 
-void Config::advance_to_next_bracket(std::ifstream& stream)
+void Config::advance_to_next_bracket(std::fstream& stream)
 {
 	std::stack<bool> brackets;
 

@@ -39,7 +39,7 @@ std::string	request_get(Request const &req)
 	}
 	else
 		action = req.get_resource();
-	std::ifstream	ifs(path + action);
+	std::ifstream	ifs((path + action).c_str());
 	if (ifs)
 	{
 		std::ostringstream	stream;
@@ -97,7 +97,7 @@ std::string	request_post(Request const &req)
 	// std::cout << "res = " << res << std::endl;
 
 	// size_t	len = res.substr(res.find("\n\n") + 2).length();
-	return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
+	return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + to_string(res.length()) + "\n\n" + res);
 }
 
 std::string	parse(Request const &req)

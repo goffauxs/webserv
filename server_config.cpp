@@ -128,7 +128,7 @@ std::string ServerConfig::getErrorPage(size_t error_code) const
 {
 	std::map<size_t, std::string>::const_iterator it = _error_pages.find(error_code);
 	if (it == _error_pages.end())
-		return "/server/error_pages/" + std::to_string(error_code) + ".html";
+		return "/server/error_pages/" + to_string(error_code) + ".html";
 	else
 		return it->second;
 }
