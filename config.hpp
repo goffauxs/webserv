@@ -42,8 +42,8 @@ public:
 		}
 	};
 private:
-	void advance_to_next_bracket(std::ifstream& stream);
-	int has_uneven_brackets(std::ifstream& stream);
+	void advance_to_next_bracket(std::fstream& stream);
+	int has_uneven_brackets(std::fstream& stream);
 
 	std::list<ServerConfig*> _list;
 };
