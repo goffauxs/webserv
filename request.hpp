@@ -6,6 +6,7 @@
 #include <map>
 #include "utils.hpp"
 #include <limits>
+#include <string.h>
 
 class Request
 {
@@ -36,7 +37,7 @@ public:
 			std::string key, value;
 			std::stringstream tmp(request_line);
 			std::getline(tmp, key, ':');
-			tmp >> value;
+			std::getline(tmp, value);
 			this->_headers.insert(std::make_pair(key, value));
 		}
 
@@ -47,11 +48,11 @@ public:
 			this->_contentLength = std::atoi(it->second.c_str());
 
 		//get body
-		this->_content = new char[_contentLength];
 		switch (this->_method)
 		{
 			case POST:
-				requestStream.readsome(_content, _contentLength);
+				_content = new char[_contentLength];
+				memcpy(_content, buff + requestStream.tellg(), _contentLength);
 				break ;
 			default:
 				break ;
@@ -78,7 +79,7 @@ private:
 	Method _method;
 	std::string _resource;
 	std::map<std::string, std::string> _headers;
-	char	*_content; //to delete in destructor or we can use vector of char but less convenient
+	char	*_content;
 	size_t	_contentLength;
 };
 
