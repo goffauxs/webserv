@@ -97,7 +97,7 @@ std::string	request_post(Request const &req)
 	// std::cout << "res = " << res << std::endl;
 
 	// size_t	len = res.substr(res.find("\n\n") + 2).length();
-	return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
+	return ("HTTP/1.1 200 OK\nContent-Length: " + std::to_string(res.length()) + "\n" + res);
 }
 
 std::string	parse(Request const &req)
