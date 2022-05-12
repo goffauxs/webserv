@@ -102,12 +102,20 @@ std::string	parse(Request const &req)
 	switch (req.get_method())
 	{
 		case GET:
-			return (request_get(req));
+			if (req.get_location().getAllowedMethods().count(GET))
+				return (request_get(req));
+			return ("HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\nContent-Length: 15\n\nNot implemented");
+			// else
+			// 	return 405 error method
 		case POST:
-			return (request_post(req));
+			if (req.get_location().getAllowedMethods().count(POST))
+				return (request_post(req));
+			return ("HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\nContent-Length: 15\n\nNot implemented");
 		case DELETE:
-			return (request_delete(req));
+			if (req.get_location().getAllowedMethods().count(DELETE))
+				return (request_delete(req));
+			return ("HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\nContent-Length: 15\n\nNot implemented");
 		default:
-			return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 26\n\nThis method is not handled");
+			return ("HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\nContent-Length: 15\n\nNot implemented");
 	}
 }
