@@ -60,16 +60,16 @@ std::vector<std::string>    create_env(Request const &req, const LocationConfig&
 	
 	//PATH_INFO the info int url after the location define in the .conf before the "?" if there's one
 	//Obsolete but it did it anyway 
-	{
-		std::string	resource(req.get_resource());
-		size_t		q = resource.find('?') - 1;
+	// {
+	// 	std::string	resource(req.get_resource());
+	// 	size_t		q = resource.find('?') - 1;
 		
-		if (q > resource.size())
-	 		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find_first_not_of(conf.getPath(), resource.find(conf.getPath()))));
-		else
-	 		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find_first_not_of(conf.getPath(), resource.find(conf.getPath())), q));
+	// 	if (q > resource.size())
+	//  		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find_first_not_of(conf.getPath(), resource.find(conf.getPath()))));
+	// 	else
+	//  		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find_first_not_of(conf.getPath(), resource.find(conf.getPath())), q));
 
-	}
+	// }
 
 	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
 	{

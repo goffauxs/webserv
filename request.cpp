@@ -1,13 +1,13 @@
 #include "request.hpp"
+#include "server_config.hpp"
 
-Request::Request(Method method, const std::string& resource, const std::map<std::string, std::string>& headers, Version version = HTTP_1_1)
-	: _version(version), _method(method), _resource(resource), _headers(headers)
+Request::~Request()
 {
+	delete [] this->_content;
+	delete this->_location;
 }
 
-Request::~Request() { delete [] this->_content; }
-
-Request::Request(const char* buff)
+Request::Request(const char* buff, Config& conf)
 	: _content(NULL)
 {
 	std::string	request(buff);
@@ -50,6 +50,34 @@ Request::Request(const char* buff)
 		default:
 			break ;
 	}
+
+	int			port = 80;
+	std::string	host = "";
+	it = this->_headers.find("Host");
+	if (it != _headers.end())
+	{
+		std::string	str = it->second;
+		if (str.find(":") == std::string::npos)
+		{
+			port = 80;
+			host = str;
+		}
+		else
+		{
+			host = str.substr(0, str.find(":"));
+			port = std::atoi(str.substr(str.find(":") + 1).c_str());
+		}
+	}
+	ServerConfig	*serv = conf.getServerConfig(port, host);
+	try
+	{
+		_location = serv->getLocation(_resource);
+	}
+	catch(const std::exception& e)
+	{
+		_location = new LocationConfig(*serv);
+	}
+	delete serv;
 }
 
 Method Request::get_method() const { return _method; }
@@ -60,3 +88,4 @@ const std::string& Request::get_resource() const { return _resource; }
 std::map<std::string, std::string> Request::get_headers() const { return _headers; }
 const char* Request::get_content() const { return _content; }
 size_t Request::get_content_length() const { return _content_length; }
+const LocationConfig&	Request::get_location() const { return *_location; }

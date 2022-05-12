@@ -4,16 +4,17 @@
 #include <stdlib.h>
 #include <iostream>
 #include <map>
-#include "utils.hpp"
 #include <limits>
 #include <string.h>
+#include "utils.hpp"
+#include "config.hpp"
+#include "location_config.hpp"
 
 class Request
 {
 public:
-	Request(Method method, const std::string& resource, const std::map<std::string, std::string>& headers, Version version);
 	~Request();
-	Request(const char *buff);
+	Request(const char *buff, Config& conf);
 
 	Method								get_method() const;
 	Version								get_version() const;
@@ -23,6 +24,7 @@ public:
 	std::map<std::string, std::string>	get_headers() const;
 	const char*							get_content() const;
 	size_t								get_content_length() const;
+	const LocationConfig&				get_location() const;
 	
 	class InvalidRequest : std::exception
 	{
@@ -39,6 +41,7 @@ private:
 	std::map<std::string, std::string> _headers;
 	char	*_content;
 	size_t	_content_length;
+	LocationConfig	*_location;
 };
 
 #endif /* REQUEST_HPP */

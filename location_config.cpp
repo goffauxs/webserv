@@ -1,8 +1,8 @@
 #include "location_config.hpp"
 #include <iostream>
 
-LocationConfig::LocationConfig(const ServerConfig& other, const std::string& path, const std::string& content)
-	: _path(path), _autoindex(false), _upload(false)
+LocationConfig::LocationConfig(const ServerConfig& other, const std::string& content)
+	: _upload(false)
 {
 	this->_root = other.getRoot();
 	this->_index = other.getIndex();
@@ -12,6 +12,7 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& pat
 	this->_client_body_buffer_size = other.getClientBodyBufferSize();
 	this->_error_pages = other.getErrorPages();
 	this->_allowed_methods = other.getAllowedMethods();
+	this->_autoindex = false;
 	std::stringstream contentStream(content);
 	
 	std::string buffer;
@@ -39,9 +40,6 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& pat
 		case upload:
 			this->_upload = true;
 			break;
-		case upload_dir:
-			lineStream >> this->_upload_dir;
-			break;
 		case root:
 			lineStream >> this->_root;
 			break;
@@ -53,6 +51,7 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& pat
 			break;
 		case cgi_ext:
 			lineStream >> this->_cgi_ext;
+			break;
 		default:
 			break;
 		}
@@ -60,7 +59,7 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& pat
 }
 
 LocationConfig::LocationConfig(const LocationConfig& other)
-	: _path(other._path), _autoindex(other._autoindex), _upload(other._upload), _cgi_ext(other._cgi_ext), _upload_dir(other._upload_dir)
+	: _upload(other._upload), _cgi_ext(other._cgi_ext)
 {
 	this->_root = other.getRoot();
 	this->_index = other.getIndex();
@@ -70,10 +69,22 @@ LocationConfig::LocationConfig(const LocationConfig& other)
 	this->_client_body_buffer_size = other.getClientBodyBufferSize();
 	this->_error_pages = other.getErrorPages();
 	this->_allowed_methods = other.getAllowedMethods();
+	this->_autoindex = other.isAutoIndexed();
 }
 
-const std::string& 		LocationConfig::getPath() const					{ return this->_path; }
-bool 					LocationConfig::isAutoIndexed() const			{ return this->_autoindex; }
+LocationConfig::LocationConfig(const ServerConfig& other)
+	: _upload(false), _cgi_ext(".py")
+{
+	this->_root = other.getRoot();
+	this->_index = other.getIndex();
+	this->_server_name = other.getServerName();
+	this->_host = other.getHost();
+	this->_port = other.getPort();
+	this->_client_body_buffer_size = other.getClientBodyBufferSize();
+	this->_error_pages = other.getErrorPages();
+	this->_allowed_methods = other.getAllowedMethods();
+	this->_autoindex = other.isAutoIndexed();
+}
+
 bool 					LocationConfig::isUploadable() const			{ return this->_upload; }
-const std::string&		LocationConfig::getUploadDir() const			{ return this->_upload_dir; }
 const std::string&		LocationConfig::getCgiExtenstion() const 		{ return this->_cgi_ext; }

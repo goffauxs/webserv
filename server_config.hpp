@@ -28,6 +28,7 @@ public:
 	LocationConfig*									getLocation(const std::string& path) const;
 	const std::map<std::string, LocationConfig*>&	getLocationMap() const;
 	const std::set<Method>&							getAllowedMethods() const;
+	bool											isAutoIndexed() const;
 
 	class NotFoundLocation : public std::exception
 	{
@@ -62,6 +63,7 @@ protected:
 	std::string								_server_name;
 	std::string								_host;
 	int										_port;
+	bool									_autoindex;
 	size_t									_client_body_buffer_size;
 	std::map<size_t, std::string>			_error_pages;
 	std::set<Method>						_allowed_methods;

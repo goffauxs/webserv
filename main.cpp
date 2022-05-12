@@ -150,7 +150,7 @@ int write_connection(int client_fd, std::map<int, std::vector<char> >& requests)
 	}
 }
 
-void	run_serv(std::set<int> servers)
+void	run_serv(std::set<int> servers, Config& conf)
 {
 	fd_set	master, read_fds, write_fds;
 	// int		client_fd;
@@ -211,8 +211,8 @@ void	run_serv(std::set<int> servers)
 				{
 					requests[*it].push_back('\0');
 					char* tmp = reinterpret_cast<char*>(&requests[*it][0]);
-					Request req(tmp);
-					
+					Request req(tmp, conf);
+
 					std::string str = parse(req);
 					std::vector<char> vec(str.begin(), str.end());
 					requests[*it] = vec;
@@ -255,7 +255,7 @@ int	main(int argc, char **argv)
 	{
 		Config				conf(argv[1]);
 		std::set<int>		sockets = setup_serv(1000, conf);
-		run_serv(sockets);
+		run_serv(sockets, conf);
 	}
 	std::cout << "Error: Please provide a configuration file" << std::endl;
 	return (1);

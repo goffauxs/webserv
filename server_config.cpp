@@ -28,7 +28,7 @@ ServerConfig::ServerConfig(const std::string& content)
 				contentStream.seekg(rest.size(), std::ios_base::cur);
 				lineStream >> path;
 				std::pair<std::map<std::string, LocationConfig*>::iterator, bool> pair;
-				pair = this->_locations.insert(std::make_pair(path, new LocationConfig(*this, path, rest)));
+				pair = this->_locations.insert(std::make_pair(path, new LocationConfig(*this, rest)));
 				if (!pair.second)
 					throw DuplicateLocationException(path);
 			}
@@ -38,6 +38,7 @@ ServerConfig::ServerConfig(const std::string& content)
 			break;
 		case default_index:
 			lineStream >> this->_index;
+			break;
 		case allowed_methods:
 			while (!lineStream.eof())
 			{
@@ -66,6 +67,9 @@ ServerConfig::ServerConfig(const std::string& content)
 				_error_pages.insert(std::make_pair(error_code, error_path));
 			}
 			break;
+		case autoindex:
+			this->_autoindex = true;
+			break;
 		case INVALID_DIRECTIVE:
 			throw InvalidDirective(directive);
 		default:
@@ -86,13 +90,15 @@ ServerConfig& ServerConfig::operator=(const ServerConfig& rhs)
 		_client_body_buffer_size = rhs._client_body_buffer_size;
 		_allowed_methods = rhs._allowed_methods;
 		_locations = rhs._locations;
+		_autoindex = rhs._autoindex;
 	}
 	return *this;
 }
 
 ServerConfig::ServerConfig(const ServerConfig& other)
 	: _root(other._root), _index(other._index), _server_name(other._server_name),
-		_host(other._host), _port(other._port), _client_body_buffer_size(other._client_body_buffer_size),
+		_host(other._host), _port(other._port), _autoindex(other._autoindex), 
+		_client_body_buffer_size(other._client_body_buffer_size),
 		_error_pages(other._error_pages), _allowed_methods(other._allowed_methods)
 {
 	for (std::map<std::string, LocationConfig*>::const_iterator it = other._locations.begin(); it != other._locations.end(); it++)
@@ -114,6 +120,7 @@ const std::string& ServerConfig::getServerName() const { return this->_server_na
 const std::map<std::string, LocationConfig*>& ServerConfig::getLocationMap() const { return this->_locations; }
 const std::set<Method>& ServerConfig::getAllowedMethods() const { return this->_allowed_methods; }
 size_t ServerConfig::getClientBodyBufferSize() const	{ return this->_client_body_buffer_size; }
+bool ServerConfig::isAutoIndexed() const	{ return this->_autoindex; }
 
 LocationConfig* ServerConfig::getLocation(const std::string& path) const
 {
