@@ -1,21 +1,26 @@
 NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror -std=c++98
+FLAGS = -Wall -Wextra -Werror -std=c++98 -I includes
 
 CXX = @c++ $(FLAGS)
 
-SRCS =	cgi.cpp\
-		cgi_env.cpp\
-		find_header.cpp\
-		main.cpp\
-		parsing.cpp\
-		utils.cpp\
-		config.cpp\
-		server_config.cpp\
-		location_config.cpp\
-		request.cpp\
-		autoindex.cpp\
-		mime_select.cpp
+SRCS_DIR = srcs
+
+CGI_DIR = $(SRCS_DIR)/cgi
+
+CONFIG_DIR = $(SRCS_DIR)/config
+
+SRCS =	$(CGI_DIR)/cgi.cpp\
+		$(CGI_DIR)/cgi_env.cpp\
+		$(CONFIG_DIR)/config.cpp\
+		$(CONFIG_DIR)/server_config.cpp\
+		$(CONFIG_DIR)/location_config.cpp\
+		$(SRCS_DIR)/main.cpp\
+		$(SRCS_DIR)/parsing.cpp\
+		$(SRCS_DIR)/utils.cpp\
+		$(SRCS_DIR)/request.cpp\
+		$(SRCS_DIR)/autoindex.cpp\
+		$(SRCS_DIR)/mime_select.cpp
 
 OBJ = $(SRCS:%.cpp=%.o)
 
