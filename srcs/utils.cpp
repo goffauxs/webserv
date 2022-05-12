@@ -166,13 +166,11 @@ Directive directive_from_string(const std::string& directive)
 std::string	get_error_response(Request const &req, size_t error_code)
 {
 	std::string	error_page = req.get_location().getErrorPage(error_code);
-	std::cout << "error_page = " << error_page << std::endl;
 
 	std::ifstream	errFile(error_page);
 	std::ostringstream	stream;
 	stream << errFile.rdbuf();
 	std::string	body = stream.str();
-	std::cout << "body = " << body << std::endl;
 
 	std::string	full_code;
 	switch (error_code)
