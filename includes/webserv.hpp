@@ -18,3 +18,4 @@ std::vector<std::string>    create_env(Request const &req, const LocationConfig&
 // std::vector<Header>::const_iterator	find_header(const std::vector<Header> &vec, std::string key);
 std::string autoindex_gen(std::string path, std::string path2);
 std::string mime_select(std::string ext);
+std::string	get_error_response(Request const &req, size_t error_code);

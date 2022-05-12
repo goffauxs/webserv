@@ -1,5 +1,6 @@
-#include "utils.hpp"
 #include <algorithm>
+#include <fstream>
+#include "request.hpp"
 
 std::string to_string(Method method)
 {
@@ -160,6 +161,34 @@ Directive directive_from_string(const std::string& directive)
 		return error_page;
 	else
 		return INVALID_DIRECTIVE;
+}
+
+std::string	get_error_response(Request const &req, size_t error_code)
+{
+	std::string	error_page = req.get_location().getErrorPage(error_code);
+	std::cout << "error_page = " << error_page << std::endl;
+
+	std::ifstream	errFile(error_page);
+	std::ostringstream	stream;
+	stream << errFile.rdbuf();
+	std::string	body = stream.str();
+	std::cout << "body = " << body << std::endl;
+
+	std::string	full_code;
+	switch (error_code)
+	{
+		case 404:
+			full_code = "404 Not Found";
+			break;
+		case 405:
+			full_code = "405 Method Not Allowed";
+			break;
+		case 501:
+			full_code = "501 Not Implemented";
+			break;
+	}
+
+	return ("HTTP/1.1" + full_code + "\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 }
 
 bool is_not_space(char c) { return !std::isspace(c); }
