@@ -19,26 +19,34 @@ std::string	request_get(Request const &req)
 	std::string	path = "server";
 	std::string	action;
 
-	if (req.get_location().isAutoIndexed())
+	if (*req.get_resource().rbegin() == '/')
 	{
-		std::string	res;
-		res = autoindex_gen(path + req.get_resource(), req.get_resource());
-		if (res != "")
-			return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(res.length()) + "\nContent-type:text/html\n\n" + res);
-	}
-	if (req.get_resource().find("?") != std::string::npos)
-	{
-		action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
-
-		std::string res = exec_cgi("cgi-bin/get.py", req, req.get_location());
-
-		size_t	len = res.substr(res.find("\n\n") + 2).length();
-		return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(len) + "\n" + res);
+		if (req.get_location().getIndex() != "")
+			action = "/" + req.get_location().getIndex();
+		else if (req.get_location().isAutoIndexed())
+		{
+			std::string	res;
+			res = autoindex_gen(path + req.get_resource(), req.get_resource());
+			if (res != "")
+				return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(res.length()) + "\nContent-type:text/html\n\n" + res);
+		}
 	}
 	else
-		action = req.get_resource();
+	{
+		if (req.get_resource().find("?") != std::string::npos)
+		{
+			action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
+
+			std::string res = exec_cgi("cgi-bin/get.py", req, req.get_location());
+
+			size_t	len = res.substr(res.find("\n\n") + 2).length();
+			return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(len) + "\n" + res);
+		}
+		else
+			action = req.get_resource();
+	}
 	std::ifstream	ifs((path + action).c_str());
-	if (ifs)
+	if (ifs && action != "")
 	{
 		std::ostringstream	stream;
 		stream << ifs.rdbuf();
@@ -55,15 +63,12 @@ std::string	request_get(Request const &req)
 		return ("HTTP/1.1 200 OK\nContent-Type: " + mime
 		+ "\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 	}
-	else
-	{
-		std::ifstream	errFile("errors/404.html");
-		std::ostringstream	stream;
-		stream << errFile.rdbuf();
-		std::string	body = stream.str();
+	std::ifstream	errFile("errors/404.html");
+	std::ostringstream	stream;
+	stream << errFile.rdbuf();
+	std::string	body = stream.str();
 
-		return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
-	}
+	return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 }
 
 std::string	request_delete(Request const &req)
