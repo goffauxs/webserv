@@ -14,6 +14,34 @@
 #include "config.hpp"
 #include "location_config.hpp"
 
+std::string	get_error_response(Request const &req, size_t error_code)
+{
+	std::string	error_page = req.get_location().getErrorPage(error_code);
+	std::cout << "error_page = " << error_page << std::endl;
+
+	std::ifstream	errFile(error_page);
+	std::ostringstream	stream;
+	stream << errFile.rdbuf();
+	std::string	body = stream.str();
+	std::cout << "body = " << body << std::endl;
+
+	std::string	full_code;
+	switch (error_code)
+	{
+		case 404:
+			full_code = "404 Not Found";
+			break;
+		case 405:
+			full_code = "405 Method Not Allowed";
+			break;
+		case 501:
+			full_code = "501 Not Implemented";
+			break;
+	}
+
+	return ("HTTP/1.1" + full_code + "\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
+}
+
 std::string	request_get(Request const &req)
 {
 	std::string	path = "server";
@@ -63,12 +91,7 @@ std::string	request_get(Request const &req)
 		return ("HTTP/1.1 200 OK\nContent-Type: " + mime
 		+ "\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 	}
-	std::ifstream	errFile("errors/404.html");
-	std::ostringstream	stream;
-	stream << errFile.rdbuf();
-	std::string	body = stream.str();
-
-	return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
+	return (get_error_response(req, 404));
 }
 
 std::string	request_delete(Request const &req)
@@ -76,18 +99,9 @@ std::string	request_delete(Request const &req)
 	std::string	path = "server";
 
 	if (!remove((path + req.get_resource()).c_str()))
-	{
 		return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nFile deleted");
-	}
 	else
-	{
-		std::ifstream	errFile("errors/404.html");
-		std::ostringstream	stream;
-		stream << errFile.rdbuf();
-		std::string	body = stream.str();
-
-		return ("HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
-	}
+		return (get_error_response(req, 404));
 }
 
 std::string	request_post(Request const &req)
@@ -104,18 +118,16 @@ std::string	parse(Request const &req)
 		case GET:
 			if (req.get_location().getAllowedMethods().count(GET))
 				return (request_get(req));
-			return ("HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\nContent-Length: 15\n\nNot implemented");
-			// else
-			// 	return 405 error method
+			return (get_error_response(req, 405));
 		case POST:
 			if (req.get_location().getAllowedMethods().count(POST))
 				return (request_post(req));
-			return ("HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\nContent-Length: 15\n\nNot implemented");
+			return (get_error_response(req, 405));
 		case DELETE:
 			if (req.get_location().getAllowedMethods().count(DELETE))
 				return (request_delete(req));
-			return ("HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\nContent-Length: 15\n\nNot implemented");
+			return (get_error_response(req, 405));
 		default:
-			return ("HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\nContent-Length: 15\n\nNot implemented");
+			return (get_error_response(req, 501));
 	}
 }
