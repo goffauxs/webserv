@@ -1,6 +1,19 @@
-#include <algorithm>
-#include <fstream>
-#include "request.hpp"
+#include "webserv.hpp"
+
+int	check(int val, std::string msg)
+{
+	if (val == -1)
+	{
+		std::cout << msg << std::endl;
+		exit(1);
+	}
+	return val;
+}
+
+std::vector<char>::iterator vector_find(std::vector<char>& vector, const char* str)
+{
+	return std::search(vector.begin(), vector.end(), str, str + strlen(str) - 1);
+}
 
 std::string to_string(Method method)
 {

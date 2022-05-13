@@ -1,12 +1,4 @@
-#include <vector>
-#include <string>
-#include <iostream>
-#include "header.hpp"
-#include "request.hpp"
 #include "webserv.hpp"
-#include <string.h>
-#include <unistd.h>
-#include "location_config.hpp"
 
 std::vector<std::string>    create_env(Request const &req, const LocationConfig& conf)
 {
@@ -57,19 +49,6 @@ std::vector<std::string>    create_env(Request const &req, const LocationConfig&
 		default:
 			break;
 	}
-	
-	//PATH_INFO the info int url after the location define in the .conf before the "?" if there's one
-	//Obsolete but it did it anyway 
-	// {
-	// 	std::string	resource(req.get_resource());
-	// 	size_t		q = resource.find('?') - 1;
-		
-	// 	if (q > resource.size())
-	//  		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find_first_not_of(conf.getPath(), resource.find(conf.getPath()))));
-	// 	else
-	//  		vec_env.push_back("PATH_INFO=" + resource.substr(resource.find_first_not_of(conf.getPath(), resource.find(conf.getPath())), q));
-
-	// }
 
 	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
 	{

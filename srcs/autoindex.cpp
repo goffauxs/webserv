@@ -1,5 +1,4 @@
 #include "webserv.hpp"
-#include <set>
 
 std::string autoindex_gen(std::string path, std::string path2)
 {

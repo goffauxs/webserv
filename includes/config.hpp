@@ -1,12 +1,16 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "server_config.hpp"
-#include "utils.hpp"
-#include <list>
+# include <list>
+# include <stack>
+# include <fstream>
+# include <iostream>
+# include <stdlib.h>
+# include "server_config.hpp"
+# include "utils.hpp"
 
-#define OPEN true
-#define CLOSED false
+# define OPEN true
+# define CLOSED false
 
 class Config
 {

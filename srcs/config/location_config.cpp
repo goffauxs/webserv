@@ -1,5 +1,4 @@
 #include "location_config.hpp"
-#include <iostream>
 
 LocationConfig::LocationConfig(const ServerConfig& other, const std::string& content)
 	: _upload(false)

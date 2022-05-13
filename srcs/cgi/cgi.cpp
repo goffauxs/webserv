@@ -1,12 +1,4 @@
-//Execute cgi
-#include "header.hpp"
-#include "request.hpp"
 #include "webserv.hpp"
-#include <iostream>
-#include <unistd.h>
-#include <sys/wait.h>
-#include "location_config.hpp"
-#include <stdio.h>
 
 void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req, char **env)
 {
@@ -14,12 +6,10 @@ void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req
 	(void)req;
 
 	av[0] = (char *)"python";
-	av[1] = (char *)/*"server/cgi-bin/upload.py";*/path.c_str();
+	av[1] = (char *)path.c_str();
 	av[2] = NULL;
 	dup2(fd_in[0], 0);
 	dup2(fd_out[1], 1);
-	// if (req.get_content())
-	// 	write(fd_in[1], req.get_content(), req.get_contentLength());
 	close(fd_out[0]);
 	close(fd_out[1]);
 	close(fd_in[1]);
