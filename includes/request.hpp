@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <map>
+#include <vector>
 #include <limits>
 #include <string.h>
 #include "utils.hpp"
@@ -34,6 +35,8 @@ private:
 	Request() {}
 	Request(const Request&) {}
 	Request& operator=(const Request&) { return *this; }
+
+	void dechunk(const char* str);
 
 	Version _version;
 	Method _method;

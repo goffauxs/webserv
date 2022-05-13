@@ -31,6 +31,7 @@ Request::Request(const char* buff, Config& conf)
 		std::stringstream tmp(request_line);
 		std::getline(tmp, key, ':');
 		std::getline(tmp, value);
+		trim(value);
 		this->_headers.insert(std::make_pair(key, value));
 	}
 
@@ -41,14 +42,16 @@ Request::Request(const char* buff, Config& conf)
 		this->_content_length = std::atoi(it->second.c_str());
 
 	//get body
-	switch (this->_method)
+	if (this->_method == POST)
 	{
-		case POST:
+		it = _headers.find("Transfer-encoding");
+		if (it != _headers.end() && it->second == "chunked")
+			dechunk(buff + requestStream.tellg());
+		else
+		{
 			_content = new char[_content_length];
 			memcpy(_content, buff + requestStream.tellg(), _content_length);
-			break ;
-		default:
-			break ;
+		}
 	}
 
 	int			port = 80;
@@ -78,6 +81,30 @@ Request::Request(const char* buff, Config& conf)
 		_location = new LocationConfig(*serv);
 	}
 	delete serv;
+}
+
+void Request::dechunk(const char* str)
+{
+	std::vector<char> ret;
+	int chunksize = 0;
+	chunksize = strtol(str, NULL, 16);
+	while (*str != '\n')
+		str++;
+	str++;
+	while (chunksize > 0)
+	{
+		for (int i = 0; i < chunksize; i++, str++)
+			ret.push_back(*str);
+		str += 2;
+		this->_content_length += chunksize;
+		chunksize = strtol(str, NULL, 16);
+		while (*str != '\n')
+			str++;
+		str++;
+	}
+	this->_content = new char[_content_length];
+	memcpy(_content, reinterpret_cast<char*>(&ret[0]), _content_length);
+	this->_headers.erase("Transfer-Encoding");
 }
 
 Method Request::get_method() const { return _method; }
