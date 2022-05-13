@@ -1,8 +1,4 @@
 #include "config.hpp"
-#include <stack>
-#include <fstream>
-#include <iostream>
-#include <stdlib.h>
 
 Config::Config(const std::string& path)
 {

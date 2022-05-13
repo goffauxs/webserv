@@ -1,19 +1,4 @@
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <cstdio>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "header.hpp"
-#include "request.hpp"
-#include "utils.hpp"
 #include "webserv.hpp"
-#include "config.hpp"
-#include "location_config.hpp"
-#include <sys/stat.h>
 
 std::string	request_get(Request const &req)
 {

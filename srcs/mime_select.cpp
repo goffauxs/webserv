@@ -1,5 +1,4 @@
-#include <string>
-#include <map>
+#include "webserv.hpp"
 
 std::map<std::string, std::string> gen_mime()
 {

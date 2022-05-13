@@ -1,11 +1,9 @@
 #ifndef SERVER_CONFIG_HPP
 #define SERVER_CONFIG_HPP
 
-#include <map>
-#include <set>
-#include <arpa/inet.h>
-// #include "location_config.hpp"
-#include "utils.hpp"
+# include <map>
+# include <set>
+# include "utils.hpp"
 
 class LocationConfig;
 

@@ -1,9 +1,9 @@
 #ifndef LOCATION_CONFIG_HPP
 #define LOCATION_CONFIG_HPP
 
-#include <set>
-#include "utils.hpp"
-#include "server_config.hpp"
+# include <set>
+# include "server_config.hpp"
+# include "utils.hpp"
 
 class LocationConfig : public ServerConfig
 {
