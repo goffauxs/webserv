@@ -186,7 +186,7 @@ std::string	get_error_response(Request const &req, size_t error_code)
 			break;
 	}
 
-	return ("HTTP/1.1" + full_code + "\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
+	return ("HTTP/1.1 " + full_code + "\nContent-Type: text/html\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
 }
 
 bool is_not_space(char c) { return !std::isspace(c); }

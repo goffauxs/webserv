@@ -20,7 +20,7 @@
 #include "config.hpp"
 
 #define PORT 8000
-#define	BUFFSIZE 65536
+#define	BUFFSIZE 131072
 
 int	check(int val, std::string msg)
 {
@@ -185,11 +185,11 @@ void	run_serv(std::set<int> servers, Config& conf)
 		{
 			if (FD_ISSET(*it, &write_fds))
 			{
-				int ret = write_connection(*it, requests);
+				int ret2 = write_connection(*it, requests);
 
-				if (ret == 0)
+				if (ret2 == 0)
 					ready.erase(it);
-				else if (ret == -1)
+				else if (ret2 == -1)
 				{
 					FD_CLR(*it, &master);
 					FD_CLR(*it, &read_fds);
@@ -205,9 +205,9 @@ void	run_serv(std::set<int> servers, Config& conf)
 		{
 			if (FD_ISSET(*it, &read_fds))
 			{
-				int ret = read_connection(*it, requests);
+				int ret2 = read_connection(*it, requests);
 
-				if (ret == 0)
+				if (ret2 == 0)
 				{
 					requests[*it].push_back('\0');
 					char* tmp = reinterpret_cast<char*>(&requests[*it][0]);
@@ -218,7 +218,7 @@ void	run_serv(std::set<int> servers, Config& conf)
 					requests[*it] = vec;
 					ready.push_back(*it);
 				}
-				else if (ret == -1)
+				else if (ret2 == -1)
 				{
 					FD_CLR(*it, &master);
 					FD_CLR(*it, &read_fds);
@@ -228,6 +228,7 @@ void	run_serv(std::set<int> servers, Config& conf)
 				break;
 			}
 		}
+
 
 		for (std::set<int>::iterator it = servers.begin(); ret && it != servers.end(); it++)
 		{

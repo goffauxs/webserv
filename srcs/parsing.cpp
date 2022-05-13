@@ -13,6 +13,7 @@
 #include "webserv.hpp"
 #include "config.hpp"
 #include "location_config.hpp"
+#include <sys/stat.h>
 
 std::string	request_get(Request const &req)
 {
@@ -45,11 +46,11 @@ std::string	request_get(Request const &req)
 		else
 			action = req.get_resource();
 	}
-	std::ifstream	ifs((path + action).c_str());
-	if (ifs && action != "")
+	std::fstream	fs((path + action).c_str());
+	if (fs && action != "")
 	{
 		std::ostringstream	stream;
-		stream << ifs.rdbuf();
+		stream << fs.rdbuf();
 		std::string	body = stream.str();
 
 		std::map<std::string, std::string> headers(req.get_headers());
@@ -62,6 +63,13 @@ std::string	request_get(Request const &req)
 		std::string mime = mime_select(action.substr(std::min(action.rfind("."), action.length())));
 		return ("HTTP/1.1 200 OK\nContent-Type: " + mime
 		+ "\nContent-Length: " + to_string(body.length()) + "\n\n" + body);
+	}
+	else if (req.get_location().isAutoIndexed())
+	{
+		std::string	res;
+		res = autoindex_gen(path + req.get_resource(), req.get_resource());
+		if (res != "")
+			return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(res.length()) + "\nContent-type:text/html\n\n" + res);
 	}
 	return (get_error_response(req, 404));
 }

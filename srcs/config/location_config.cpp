@@ -27,6 +27,7 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& con
 		switch(directive_from_string(directive))
 		{
 		case allowed_methods:
+			this->_allowed_methods.clear();
 			while (!lineStream.eof())
 			{
 				std::string tmp;

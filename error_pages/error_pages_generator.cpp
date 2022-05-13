@@ -42,7 +42,7 @@ int main()
 	for (std::map<std::string, std::string>::iterator it = mp.begin(); it != mp.end(); it++)
 	{
 		int fd = open((it->first + ".html").c_str(), O_CREAT | O_WRONLY, S_IRUSR + S_IWUSR + S_IRGRP + S_IWGRP + S_IROTH);
-		std::string file = "<!DOCTYPE html>\n<head>\n<title>" + it->second + "</title>\n</head>\n<body style=\"background-color:#ff9090\">\n<div id=\"main\">\n<div class=\"fof\">\n<h1>Error " + it->first +"</h1>\n</div>\n</div>\n</body>\n</html>\n";
+		std::string file = "<!DOCTYPE html>\n<head>\n<title>" + it->second + "</title>\n</head>\n<body style=\"background-color:#ff9090\">\n<div id=\"main\">\n<div class=\"fof\">\n<h1 style=\"text-align:center\">Error " + it->first +"</h1>\n<h2 style=\"text-align:center\">" + it->second + "</h2>\n</div>\n</div>\n</body>\n</html>\n";
 		write(fd, file.c_str(), file.length());
 		close(fd);
 	}

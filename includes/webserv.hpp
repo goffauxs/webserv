@@ -7,6 +7,8 @@
 #include <dirent.h>
 #include "location_config.hpp"
 
+#define HERE std::cout << "here" << std::endl;
+
 //just a c style .h file for prototypes
 
 std::string	parse(Request const &req);
