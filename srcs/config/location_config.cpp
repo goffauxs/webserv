@@ -73,7 +73,7 @@ LocationConfig::LocationConfig(const LocationConfig& other)
 }
 
 LocationConfig::LocationConfig(const ServerConfig& other)
-	: _upload(false), _cgi_ext(".py")
+	: _upload(false), _cgi_ext("")
 {
 	this->_root = other.getRoot();
 	this->_index = other.getIndex();
@@ -87,4 +87,4 @@ LocationConfig::LocationConfig(const ServerConfig& other)
 }
 
 bool 					LocationConfig::isUploadable() const			{ return this->_upload; }
-const std::string&		LocationConfig::getCgiExtenstion() const 		{ return this->_cgi_ext; }
+const std::string&		LocationConfig::getCgiExtension() const 		{ return this->_cgi_ext; }

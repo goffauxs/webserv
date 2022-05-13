@@ -69,11 +69,37 @@ std::string	request_delete(Request const &req)
 		return (get_error_response(req, 404));
 }
 
+std::string	test_file_exec_cgi(std::string full_path, Request const &req)
+{
+	std::fstream	file(full_path.c_str());
+	if (file)
+	{
+		std::string res = exec_cgi(full_path, req, req.get_location());
+		return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
+	}
+	else
+		return (get_error_response(req, 404));
+}
+
 std::string	request_post(Request const &req)
 {
-	std::string res = exec_cgi("cgi-bin/upload.py", req, req.get_location());
+	std::string	path = "cgi-bin/";
+	std::string	action = req.get_resource();
 
-	return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
+	size_t	dot = action.find(".");
+	if (dot == std::string::npos)
+		return (get_error_response(req, 400));
+
+	std::string	ext = action.substr(dot);
+	if (req.get_location().getCgiExtension() != "")
+	{
+		if (ext == req.get_location().getCgiExtension())
+			return (test_file_exec_cgi(path + action, req));
+		else
+			return (get_error_response(req, 501));
+	}
+	else
+		return (test_file_exec_cgi(path + action, req));
 }
 
 std::string	parse(Request const &req)

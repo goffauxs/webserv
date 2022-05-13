@@ -188,6 +188,8 @@ std::string	get_error_response(Request const &req, size_t error_code)
 	std::string	full_code;
 	switch (error_code)
 	{
+		case 400:
+			full_code = "400 Bad Request";
 		case 404:
 			full_code = "404 Not Found";
 			break;

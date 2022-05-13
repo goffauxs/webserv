@@ -29,7 +29,7 @@ std::map<std::string, std::string>	create_map()
 	mp.insert(std::pair<std::string, std::string>("405", "Method Not Allowed "));
 	mp.insert(std::pair<std::string, std::string>("404", "Not Found"));
 	mp.insert(std::pair<std::string, std::string>("403", "Forbidden"));
-	mp.insert(std::pair<std::string, std::string>("402", "Payment Requird "));
+	mp.insert(std::pair<std::string, std::string>("402", "Payment Required "));
 	mp.insert(std::pair<std::string, std::string>("401", "Unauthorized"));
 	mp.insert(std::pair<std::string, std::string>("400", "Bad Request"));
 	return (mp);

@@ -14,7 +14,7 @@ public:
 	LocationConfig(const ServerConfig& other);
 
 	bool					isUploadable() const;
-	const std::string&		getCgiExtenstion() const;
+	const std::string&		getCgiExtension() const;
 private:
 	LocationConfig() {}
 	LocationConfig& operator=(const LocationConfig&) { return *this; }

@@ -1,16 +1,34 @@
 #include "webserv.hpp"
 
-int	accept_connection(int socket_fd)
+int write_connection(int client_fd, std::map<int, std::vector<char> >& requests)
 {
-	int	client_fd;
-	int	addrlen = sizeof(sockaddr_in);
-	sockaddr_in	client_addr;
+	static std::map<int, size_t> sent;
 
-	check(client_fd = accept(socket_fd, (struct sockaddr*)&client_addr, (socklen_t*)&addrlen),
-		"Failed to grab connection");
-	fcntl(client_fd, F_SETFL, O_NONBLOCK);
+	if (!sent.count(client_fd))
+		sent[client_fd] = 0;
+	
+	size_t size = std::min((unsigned long)BUFFSIZE, requests[client_fd].size() - sent[client_fd]);
+	int ret = send(client_fd, &requests[client_fd][sent[client_fd]], size, 0);
 
-	return (client_fd);
+	if (ret == -1)
+	{
+		close(client_fd);
+		requests.erase(client_fd);
+		sent[client_fd] = 0;
+		return -1;
+	}
+	else
+	{
+		sent[client_fd] += ret;
+		if (sent[client_fd] >= requests[client_fd].size())
+		{
+			requests.erase(client_fd);
+			sent[client_fd] = 0;
+			return 0;
+		}
+		else
+			return 1;
+	}
 }
 
 int	read_connection(int client_fd, std::map<int, std::vector<char> >& requests)
@@ -49,35 +67,17 @@ int	read_connection(int client_fd, std::map<int, std::vector<char> >& requests)
 	return 1;
 }
 
-int write_connection(int client_fd, std::map<int, std::vector<char> >& requests)
+int	accept_connection(int socket_fd)
 {
-	static std::map<int, size_t> sent;
+	int	client_fd;
+	int	addrlen = sizeof(sockaddr_in);
+	sockaddr_in	client_addr;
 
-	if (!sent.count(client_fd))
-		sent[client_fd] = 0;
-	
-	size_t size = std::min((unsigned long)BUFFSIZE, requests[client_fd].size() - sent[client_fd]);
-	int ret = send(client_fd, &requests[client_fd][sent[client_fd]], size, 0);
+	check(client_fd = accept(socket_fd, (struct sockaddr*)&client_addr, (socklen_t*)&addrlen),
+		"Failed to grab connection");
+	fcntl(client_fd, F_SETFL, O_NONBLOCK);
 
-	if (ret == -1)
-	{
-		close(client_fd);
-		requests.erase(client_fd);
-		sent[client_fd] = 0;
-		return -1;
-	}
-	else
-	{
-		sent[client_fd] += ret;
-		if (sent[client_fd] >= requests[client_fd].size())
-		{
-			requests.erase(client_fd);
-			sent[client_fd] = 0;
-			return 0;
-		}
-		else
-			return 1;
-	}
+	return (client_fd);
 }
 
 void	run_serv(std::set<int> servers, Config& conf)
