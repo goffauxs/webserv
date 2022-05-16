@@ -71,10 +71,10 @@ std::vector<std::string>    create_env(std::string path, Request const &req, con
 		switch (req.get_method())
 		{
 			case GET:
-				vec_env.push_back("SCRIPT_NAME=test.py");
+				vec_env.push_back("SCRIPT_NAME=" + path.substr(path.rfind("/") + 1));
 				break;
 			case POST:
-				vec_env.push_back("SCRIPT_NAME=upload.py");
+				vec_env.push_back("SCRIPT_NAME=" + path.substr(path.rfind("/") + 1));
 				break;
 			default:
 				break;
