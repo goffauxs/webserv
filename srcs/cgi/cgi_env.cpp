@@ -89,10 +89,6 @@ std::vector<std::string>    create_env(std::string path, Request const &req, con
 			vec_env.push_back("QUERY_STRING=" + first_header.substr(first_header.find("?") + 1));
 	}
 	
-	//REMOTE_HOST
-	
-	//REMOTE_ADDR
-	
 	//CONTENT_TYPE Only for POST request, is define in the http request with the key "Content-Type"
 	it = headers.find("Content-Type");
 	if (req.get_method() == POST && it != headers.end())
