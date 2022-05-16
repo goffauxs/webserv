@@ -41,10 +41,6 @@ int	read_connection(int client_fd, std::map<int, std::vector<char> >& requests)
 	{
 		close(client_fd);
 		requests.erase(client_fd);
-		// if (!ret)
-		// 	std::cerr << "\rConnection was closed by client." << std::endl;
-		// else
-		// 	std::cerr << "\rRead error, closing connection." << std::endl;
 		return -1;
 	}
 
