@@ -42,7 +42,7 @@ std::string check_ext(Request const &req)
 
 std::string	request_get(Request const &req)
 {
-	std::string	path = req.get_location().getRoot();
+	std::string	path = "server";
 	std::string	action;
 
 	if (*req.get_resource().rbegin() == '/')
@@ -52,7 +52,7 @@ std::string	request_get(Request const &req)
 		else if (req.get_location().isAutoIndexed())
 		{
 			std::string	res;
-			res = autoindex_gen(path, req.get_resource());
+			res = autoindex_gen(path + req.get_resource(), req.get_resource());
 			if (res != "")
 				return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(res.length()) + "\nContent-type:text/html\n\n" + res);
 		}

@@ -38,6 +38,7 @@ std::map<std::string, std::string> gen_mime()
 	mime.insert(std::pair<std::string, std::string>(".ogv", "video/ogg"));
 	mime.insert(std::pair<std::string, std::string>(".ogx", "application/ogg"));
 	mime.insert(std::pair<std::string, std::string>(".pdf", "application/pdf"));
+	mime.insert(std::pair<std::string, std::string>(".png", "image/png"));
 	mime.insert(std::pair<std::string, std::string>(".ppt", "application/vnd.ms-powerpoint"));
 	mime.insert(std::pair<std::string, std::string>(".rar", "application/x-rar-compressed"));
 	mime.insert(std::pair<std::string, std::string>(".rtf", "application/rtf"));
