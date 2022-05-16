@@ -31,7 +31,7 @@ std::vector<std::string>    create_env(std::string path, Request const &req, con
 			break;
 	}
 
-	//SERVER_PORT .conf file parsed needed : 8080, 80 etc..
+	//SERVER_PORT : 8080, 80 etc..
 	vec_env.push_back("SERVER_PORT=" + ::to_string(conf.getPort()));
 
 	//REQUEST_METHOD at the begining of the first line
@@ -50,7 +50,7 @@ std::vector<std::string>    create_env(std::string path, Request const &req, con
 			break;
 	}
 
-	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
+	//PATH_TRANSLATED the absolute path of the cgi
 	{
 		char pwd[PATH_MAX];
 		getcwd(pwd, PATH_MAX);
@@ -66,7 +66,7 @@ std::vector<std::string>    create_env(std::string path, Request const &req, con
 		}
 	}
 
-	//SCRIPT_NAME .conf file parsed needed : the path of the cgi script
+	//SCRIPT_NAME the path of the cgi script
 	{
 		switch (req.get_method())
 		{
