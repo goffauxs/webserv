@@ -1,6 +1,6 @@
 #include "webserv.hpp"
 
-std::vector<std::string>    create_env(Request const &req, const LocationConfig& conf)
+std::vector<std::string>    create_env(std::string path, Request const &req, const LocationConfig& conf)
 {
 	std::vector<std::string>							vec_env;
 	std::map<std::string, std::string>					headers(req.get_headers());
@@ -31,7 +31,7 @@ std::vector<std::string>    create_env(Request const &req, const LocationConfig&
 			break;
 	}
 
-	//SERVER_PORT .conf file parsed needed : 8080, 80 etc..
+	//SERVER_PORT : 8080, 80 etc..
 	vec_env.push_back("SERVER_PORT=" + ::to_string(conf.getPort()));
 
 	//REQUEST_METHOD at the begining of the first line
@@ -50,34 +50,31 @@ std::vector<std::string>    create_env(Request const &req, const LocationConfig&
 			break;
 	}
 
-	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
+	//PATH_TRANSLATED the absolute path of the cgi
 	{
-		//Think to change the path when we will set pwd at the directory
 		char pwd[PATH_MAX];
 		getcwd(pwd, PATH_MAX);
 
 		switch (req.get_method())
 		{
 			case GET:
-				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/test.py");
-				break;
 			case POST:
-				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/upload.py");
+				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/" + path);
 				break;
 			default:
 				break;
 		}
 	}
 
-	//SCRIPT_NAME .conf file parsed needed : the path of the cgi script
+	//SCRIPT_NAME the path of the cgi script
 	{
 		switch (req.get_method())
 		{
 			case GET:
-				vec_env.push_back("SCRIPT_NAME=test.py");
+				vec_env.push_back("SCRIPT_NAME=" + path.substr(path.rfind("/") + 1));
 				break;
 			case POST:
-				vec_env.push_back("SCRIPT_NAME=upload.py");
+				vec_env.push_back("SCRIPT_NAME=" + path.substr(path.rfind("/") + 1));
 				break;
 			default:
 				break;

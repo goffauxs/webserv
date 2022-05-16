@@ -29,7 +29,7 @@
 # define HERE std::cout << "here" << std::endl;
 
 // cgi_env.cpp
-std::vector<std::string>    create_env(Request const &req, const LocationConfig& conf);
+std::vector<std::string>    create_env(std::string path, Request const &req, const LocationConfig& conf);
 char						**vec_to_tab(std::vector<std::string> vec);
 
 // cgi.cpp
