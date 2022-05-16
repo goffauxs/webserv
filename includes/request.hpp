@@ -31,6 +31,8 @@ public:
 	{
 		const char* what() const throw() { return "Invalid Request"; }
 	};
+
+	static std::map<std::string, std::string> cgi_exec;
 private:
 	Request() {}
 	Request(const Request&) {}

@@ -14,7 +14,7 @@ if not isExist:
 if fileitem.filename:
 	fn = os.path.basename(fileitem.filename)
 	open(path + fn, 'wb').write(fileitem.file.read())
-	message = "The file '" + fn + "' was uploaded successfully"
+	message = "The file '" + fn + "' was uploaded successfully with python"
 
 else:
 	message = "No file was uploaded"

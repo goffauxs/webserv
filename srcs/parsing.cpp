@@ -1,5 +1,45 @@
 #include "webserv.hpp"
 
+std::string	test_file_exec_cgi(std::string full_path, Request const &req)
+{
+	std::fstream	file(full_path.c_str());
+	if (file)
+	{
+		std::string res = exec_cgi(full_path, req, req.get_location());
+		return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
+	}
+	else
+		return (get_error_response(req, 404));
+}
+
+std::string check_ext(Request const &req)
+{
+	std::string	path = "cgi-bin";
+	std::string	action = req.get_resource();
+
+	size_t	dot = action.find(".");
+	if (dot == std::string::npos)
+		return (get_error_response(req, 400));
+
+	std::string	ext = action.substr(dot);
+	if (ext.find('?') != std::string::npos)
+	{
+		action = req.get_resource().substr(0, req.get_resource().find("?"));
+		ext.erase(ext.find('?'));
+	}
+	if (!req.cgi_exec.count(ext))
+		return get_error_response(req, 501);
+	if (req.get_location().getCgiExtension() != "")
+	{
+		if (ext == req.get_location().getCgiExtension())
+			return (test_file_exec_cgi(path + action, req));
+		else
+			return (get_error_response(req, 501));
+	}
+	else
+		return (test_file_exec_cgi(path + action, req));
+}
+
 std::string	request_get(Request const &req)
 {
 	std::string	path = "server";
@@ -21,12 +61,7 @@ std::string	request_get(Request const &req)
 	{
 		if (req.get_resource().find("?") != std::string::npos)
 		{
-			action = req.get_resource().substr(0, req.get_resource().find("?") - 1);
-
-			std::string res = exec_cgi("cgi-bin/get.py", req, req.get_location());
-
-			size_t	len = res.substr(res.find("\n\n") + 2).length();
-			return ("HTTP/1.1 200 OK\nContent-Length: " + to_string(len) + "\n" + res);
+			return check_ext(req);
 		}
 		else
 			action = req.get_resource();
@@ -61,7 +96,7 @@ std::string	request_get(Request const &req)
 
 std::string	request_delete(Request const &req)
 {
-	std::string	path = "server";
+	std::string	path = req.get_location().getRoot();
 
 	if (!remove((path + req.get_resource()).c_str()))
 		return ("HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nFile deleted");
@@ -69,37 +104,9 @@ std::string	request_delete(Request const &req)
 		return (get_error_response(req, 404));
 }
 
-std::string	test_file_exec_cgi(std::string full_path, Request const &req)
-{
-	std::fstream	file(full_path.c_str());
-	if (file)
-	{
-		std::string res = exec_cgi(full_path, req, req.get_location());
-		return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
-	}
-	else
-		return (get_error_response(req, 404));
-}
-
 std::string	request_post(Request const &req)
 {
-	std::string	path = "cgi-bin/";
-	std::string	action = req.get_resource();
-
-	size_t	dot = action.find(".");
-	if (dot == std::string::npos)
-		return (get_error_response(req, 400));
-
-	std::string	ext = action.substr(dot);
-	if (req.get_location().getCgiExtension() != "")
-	{
-		if (ext == req.get_location().getCgiExtension())
-			return (test_file_exec_cgi(path + action, req));
-		else
-			return (get_error_response(req, 501));
-	}
-	else
-		return (test_file_exec_cgi(path + action, req));
+	return check_ext(req);
 }
 
 std::string	parse(Request const &req)

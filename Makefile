@@ -38,6 +38,7 @@ clean:
 
 fclean: clean
 		@rm -rf $(NAME)
+		@rm -rf server/uploads
 		@echo "\033[36mFCLEAN OK\033[0m"
 
 re: fclean all

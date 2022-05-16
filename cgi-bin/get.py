@@ -10,7 +10,6 @@ form = cgi.FieldStorage()
 user_name = form.getvalue('user_name')
 user_message  = form.getvalue('user_message')
 
-print ("Content-type:text/html\n\n")
 print ("<html>")
 print ("<head>")
 print ("<title>CGI xana</title>")

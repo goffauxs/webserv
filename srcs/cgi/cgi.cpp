@@ -3,9 +3,12 @@
 void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req, char **env)
 {
 	char	*av[3];
-	(void)req;
+	// (void)req;
 
-	av[0] = (char *)"python";
+	std::string tmp = req.get_resource().substr(req.get_resource().find('.'));
+	if (tmp.find('?') != std::string::npos)
+		tmp.erase(tmp.find('?'));
+	av[0] = (char *)req.cgi_exec[tmp].c_str();
 	av[1] = (char *)path.c_str();
 	av[2] = NULL;
 	dup2(fd_in[0], 0);
@@ -14,7 +17,7 @@ void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req
 	close(fd_out[1]);
 	close(fd_in[1]);
 	close(fd_in[0]);
-	execve("/usr/bin/python2.7", av, env);
+	execve(av[0], av, env);
 	perror("The error is :");
 	exit(1);
 }

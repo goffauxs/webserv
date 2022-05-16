@@ -1,6 +1,16 @@
 #include "request.hpp"
 #include "server_config.hpp"
 
+std::map<std::string, std::string> create_cgi_map()
+{
+	std::map<std::string, std::string> tmp;
+	tmp.insert(std::make_pair(".py", "/usr/bin/python2.7"));
+	tmp.insert(std::make_pair(".pl", "/usr/bin/perl"));
+	return tmp;
+}
+
+std::map<std::string, std::string> Request::cgi_exec = create_cgi_map();
+
 Request::~Request()
 {
 	delete [] this->_content;
@@ -35,28 +45,10 @@ Request::Request(const char* buff, Config& conf)
 		this->_headers.insert(std::make_pair(key, value));
 	}
 
-	//get content-length
-	this->_content_length = 0;
-	std::map<std::string, std::string>::iterator it = this->_headers.find("Content-Length");
-	if (it != _headers.end())
-		this->_content_length = std::atoi(it->second.c_str());
-
-	//get body
-	if (this->_method == POST)
-	{
-		it = _headers.find("Transfer-encoding");
-		if (it != _headers.end() && it->second == "chunked")
-			dechunk(buff + requestStream.tellg());
-		else
-		{
-			_content = new char[_content_length];
-			memcpy(_content, buff + requestStream.tellg(), _content_length);
-		}
-	}
-
+	// get host/port
 	int			port = 80;
 	std::string	host = "";
-	it = this->_headers.find("Host");
+	std::map<std::string, std::string>::iterator it = this->_headers.find("Host");
 	if (it != _headers.end())
 	{
 		std::string	str = it->second;
@@ -71,16 +63,45 @@ Request::Request(const char* buff, Config& conf)
 			port = std::atoi(str.substr(str.find(":") + 1).c_str());
 		}
 	}
+
+	// get server config
 	ServerConfig	*serv = conf.getServerConfig(port, host);
 	try
 	{
-		_location = serv->getLocation(_resource);
+		if (_headers.count("Referer") && (_method == POST || _resource.find("?") != std::string::npos))
+		{
+			std::string host_port = "http://" + _headers["Host"];
+			std::string referer = _headers["Referer"].substr(host_port.size());
+			_location = serv->getLocation(referer);
+		}
+		else
+			_location = serv->getLocation(_resource);
 	}
 	catch(const std::exception& e)
 	{
 		_location = new LocationConfig(*serv);
 	}
 	delete serv;
+
+	//get content-length
+	this->_content_length = 0;
+	it = this->_headers.find("Content-Length");
+	if (it != _headers.end())
+		this->_content_length = std::min(strtoul(it->second.c_str(), NULL, 0), _location->getClientBodyBufferSize());
+
+	//get body
+	if (this->_method == POST)
+	{
+		it = _headers.find("Transfer-encoding");
+		if (it != _headers.end() && it->second == "chunked")
+			dechunk(buff + requestStream.tellg());
+		else
+		{
+			_content = new char[_content_length];
+			memcpy(_content, buff + requestStream.tellg(), _content_length);
+		}
+	}
+
 }
 
 void Request::dechunk(const char* str)
@@ -88,6 +109,7 @@ void Request::dechunk(const char* str)
 	std::vector<char> ret;
 	int chunksize = 0;
 	chunksize = strtol(str, NULL, 16);
+	chunksize = (_content_length + chunksize < _location->getClientBodyBufferSize()) ? chunksize : _location->getClientBodyBufferSize() - _content_length;
 	while (*str != '\n')
 		str++;
 	str++;
@@ -104,7 +126,7 @@ void Request::dechunk(const char* str)
 	}
 	this->_content = new char[_content_length];
 	memcpy(_content, reinterpret_cast<char*>(&ret[0]), _content_length);
-	this->_headers.erase("Transfer-Encoding");
+	this->_headers.erase("Transfer-encoding");
 }
 
 Method Request::get_method() const { return _method; }
