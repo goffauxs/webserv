@@ -1,6 +1,6 @@
 #include "webserv.hpp"
 
-std::vector<std::string>    create_env(Request const &req, const LocationConfig& conf)
+std::vector<std::string>    create_env(std::string path, Request const &req, const LocationConfig& conf)
 {
 	std::vector<std::string>							vec_env;
 	std::map<std::string, std::string>					headers(req.get_headers());
@@ -52,17 +52,14 @@ std::vector<std::string>    create_env(Request const &req, const LocationConfig&
 
 	//PATH_TRANSLATED TODO .conf file parsed needed; the absolute path of the cgi
 	{
-		//Think to change the path when we will set pwd at the directory
 		char pwd[PATH_MAX];
 		getcwd(pwd, PATH_MAX);
 
 		switch (req.get_method())
 		{
 			case GET:
-				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/test.py");
-				break;
 			case POST:
-				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/server/cgi-bin/upload.py");
+				vec_env.push_back(std::string("PATH_TRANSLATED=") + pwd + "/" + path);
 				break;
 			default:
 				break;
