@@ -1,4 +1,6 @@
 #include "webserv.hpp"
+#include <sys/types.h>
+#include <sys/wait.h>
 
 void		fork_exec(std::string path, int fd_in[2],int fd_out[2], Request const &req, char **env)
 {
