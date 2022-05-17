@@ -17,6 +17,7 @@
 # include <sys/socket.h> //socket functions
 # include <netinet/in.h> //internet protocol functions and structs
 # include <dirent.h> //dir functions
+# include <exception>
 
 # include "config.hpp"
 # include "server_config.hpp"

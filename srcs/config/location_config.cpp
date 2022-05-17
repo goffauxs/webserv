@@ -23,6 +23,8 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& con
 		std::stringstream	lineStream(buffer);
 		std::string			directive;
 		lineStream >> directive;
+		if (directive[0] == '#')
+			continue;
 		switch(directive_from_string(directive))
 		{
 		case allowed_methods:
@@ -52,6 +54,8 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& con
 		case cgi_ext:
 			lineStream >> this->_cgi_ext;
 			break;
+		case INVALID_DIRECTIVE:
+			throw InvalidDirective(directive);
 		default:
 			break;
 		}

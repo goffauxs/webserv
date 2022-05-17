@@ -6,7 +6,7 @@ std::string	test_file_exec_cgi(std::string full_path, Request const &req)
 	if (file)
 	{
 		std::string res = exec_cgi(full_path, req, req.get_location());
-		return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(res.length()) + "\n\n" + res);
+		return ("HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + to_string(res.length()) + "\n\n" + res);
 	}
 	else
 		return (get_error_response(req, 404));

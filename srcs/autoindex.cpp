@@ -7,7 +7,6 @@ std::string autoindex_gen(std::string path, std::string path2)
 	std::set<std::string>		files;		
 	std::string		return_string("<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset=\"utf-8\"/>\n\t<title>autoindex</title>\n</head>\n<body>\n\n<p>");
 
-	std::cout << path << std::endl << path2 << std::endl;
 	direc = opendir(path.c_str());
 	if (!direc)
 		return (std::string(""));

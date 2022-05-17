@@ -136,9 +136,20 @@ void	run_serv(std::set<int> servers, Config& conf)
 				{
 					requests[*it].push_back('\0');
 					char* tmp = reinterpret_cast<char*>(&requests[*it][0]);
-					Request req(tmp, conf);
+					std::string str;
+					try
+					{
+						Request req(tmp, conf);
 
-					std::string str = parse(req);
+						str = parse(req);
+					}
+					catch (const std::exception& e)
+					{
+						std::fstream fs("error_pages/400.html");
+						std::stringstream ss;
+						ss << fs.rdbuf();
+						str = "HTTP/1.1 400 Bad Request\nContent-Type: text/html\nContent-Length: " + to_string(ss.str().size()) + "\n\n" + ss.str();
+					}
 					std::vector<char> vec(str.begin(), str.end());
 					requests[*it] = vec;
 					ready.push_back(*it);

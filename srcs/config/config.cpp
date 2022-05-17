@@ -2,13 +2,15 @@
 
 Config::Config(const std::string& path)
 {
+	if (path.substr(path.find_last_of('.') + 1) != "conf")
+		throw BadExtension();
 	std::fstream ifs(path.c_str(), std::fstream::in);
 
 	if (ifs.good())
 	{
 		if (ifs.peek() == std::fstream::traits_type::eof())
 		{
-			std::cerr << "Error: " << path << " is empty!" << std::endl;
+			std::cerr << "Error: " << path << " is empty" << std::endl;
 			exit(1);
 		}
 		if (has_uneven_brackets(ifs))

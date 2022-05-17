@@ -45,6 +45,13 @@ public:
 			return "Error: Unexpected token after server";
 		}
 	};
+	class BadExtension : public std::exception
+	{
+		const char* what() const throw()
+		{
+			return "Error: Bad file extension";
+		}
+	};
 private:
 	void advance_to_next_bracket(std::fstream& stream);
 	int has_uneven_brackets(std::fstream& stream);

@@ -13,7 +13,8 @@ std::map<std::string, std::string> Request::cgi_exec = create_cgi_map();
 
 Request::~Request()
 {
-	delete [] this->_content;
+	if (_method == POST)
+		delete [] this->_content;
 	delete this->_location;
 }
 

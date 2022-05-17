@@ -27,7 +27,7 @@ public:
 	size_t								get_content_length() const;
 	const LocationConfig&				get_location() const;
 	
-	class InvalidRequest : std::exception
+	class InvalidRequest : public std::exception
 	{
 		const char* what() const throw() { return "Invalid Request"; }
 	};
