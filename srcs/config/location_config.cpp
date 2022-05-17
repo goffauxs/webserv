@@ -23,7 +23,7 @@ LocationConfig::LocationConfig(const ServerConfig& other, const std::string& con
 		std::stringstream	lineStream(buffer);
 		std::string			directive;
 		lineStream >> directive;
-		if (directive[0] == '#')
+		if (directive == "" || directive == "{" || directive == "}" || directive[0] == '#')
 			continue;
 		switch(directive_from_string(directive))
 		{

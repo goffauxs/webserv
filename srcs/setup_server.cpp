@@ -4,10 +4,20 @@ std::set<int>	setup_serv(int backlog, const Config& conf)
 {
 	std::list<ServerConfig*>	list = conf.getServerList();
 	std::set<int>				sock_set;
+	std::map<int, std::string>	port_map;
 	int							optval = 1;
 
 	for (std::list<ServerConfig*>::iterator it = list.begin(); it != list.end(); it++)
 	{
+		if (!port_map.insert(std::make_pair((*it)->getPort(), (*it)->getServerName())).second)
+		{
+			if ((*it)->getServerName() == port_map[(*it)->getPort()])
+			{
+				std::cerr << "Duplicate host:port combination in config file" << std::endl;
+				exit(1);
+			}
+			continue;
+		}
 		sockaddr_in sockaddr;
 
 		//create socket with IPV4, TCP
